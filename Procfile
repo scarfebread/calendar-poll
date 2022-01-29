@@ -1,1 +1,1 @@
-web: ./build/install/shoppinglist/bin/shoppinglist
+web: ./build/install/calendar-poll/bin/calendar-poll
