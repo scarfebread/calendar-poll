@@ -16,6 +16,7 @@ private val scope = MainScope()
 val app = fc<Props> {
     var polls by useState(emptyList<Poll>())
     var user by useState<User?>(null)
+    val (currentPoll, setCurrentPoll) = useState<Poll?>(null)
 
     useEffectOnce {
         scope.launch {
@@ -36,7 +37,7 @@ val app = fc<Props> {
                 marginLeft = LinearDimension("50px")
             }
 
-            if (user == null) {
+            if (user?.name == null) {
                 child(createUser) {
                     attrs.createUser = { name ->
                         scope.launch {
@@ -47,18 +48,25 @@ val app = fc<Props> {
                     }
                 }
             } else {
-                child(createPoll) {
-                    attrs.addPoll = { poll ->
-                        scope.launch {
-                            addPoll(poll)
-                            polls = getPolls()
+                if (currentPoll == null) {
+                    polls.forEach { poll ->
+                        if (poll.current) {
+                            setCurrentPoll(poll)
                         }
                     }
                 }
 
-                if (polls.isNotEmpty()) {
-                    child(yourPolls) {
-                        attrs.polls = polls
+                child(loggedInView) {
+                    attrs {
+                        addPoll = { poll ->
+                            scope.launch {
+                                // TODO naming
+                                addPollApi(poll)
+                                polls = getPolls()
+                            }
+                        }
+                        this.polls = polls
+                        this.currentPoll = currentPoll
                     }
                 }
             }

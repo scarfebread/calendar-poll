@@ -9,7 +9,9 @@ class PollRepository {
         polls.add(poll)
     }
 
-    fun getPolls(): List<Poll> {
-        return polls
+    fun findById(id: String): Poll? {
+        return polls.firstOrNull { poll ->
+            poll.id == id
+        }
     }
 }

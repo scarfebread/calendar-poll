@@ -14,7 +14,7 @@ suspend fun getPolls(): List<Poll> {
     return jsonClient.get(endpoint + Poll.path)
 }
 
-suspend fun addPoll(poll: Poll) {
+suspend fun addPollApi(poll: Poll) {
     jsonClient.post<Unit>(endpoint + Poll.path) {
         contentType(ContentType.Application.Json)
         body = poll

@@ -1,7 +1,7 @@
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class User(var id: String?, val name: String, val polls: MutableList<String> = mutableListOf()) {
+data class User(var id: String?, var name: String?, var polls: MutableList<String> = mutableListOf()) {
     fun addPoll(poll: String) {
         polls.add(poll)
     }
