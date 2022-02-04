@@ -1,58 +1,106 @@
 package compoents
 
+import Poll
 import kotlinx.css.LinearDimension
 import kotlinx.css.paddingRight
-import kotlinx.css.tbody
+import kotlinx.css.width
+import kotlinx.html.InputType.*
+import org.w3c.dom.HTMLInputElement
 import react.Props
-import react.dom.html.InputType
+import react.dom.html.ReactHTML.form
 import react.dom.html.ReactHTML.h2
-import react.dom.html.ReactHTML.input
 import react.dom.html.ReactHTML.table
 import react.dom.html.ReactHTML.tbody
-import react.dom.html.ReactHTML.td
 import react.dom.html.ReactHTML.tr
+import react.dom.onChange
 import react.fc
+import react.useState
 import styled.css
-import styled.styledTd
+import styled.styledInput as input
+import styled.styledTd as td
 
-val createPoll = fc<Props> {
+external interface CreatePollProps : Props {
+    var addPoll: (Poll) -> Unit
+}
+
+val createPoll = fc<CreatePollProps> { props ->
+    val (title, setTitle) = useState("")
+    val (startDate, setStartDate) = useState("")
+    val (endDate, setEndDate) = useState("")
+    val (includeWeekends, setIncludeWeekends) = useState(false)
+
     h2 { +"Create poll" }
 
-    table {
-        tbody {
-            tr {
-                styledTd {
-                    css {
-                        paddingRight = LinearDimension("150px")
+    form {
+        attrs.onSubmit = {
+            it.preventDefault()
+            props.addPoll(Poll(title, startDate, endDate, includeWeekends))
+            setTitle("")
+            setStartDate("")
+            setEndDate("")
+        }
+
+        table {
+            tbody {
+                tr {
+                    td {
+                        css {
+                            paddingRight = LinearDimension("150px")
+                        }
+                        +"Title"
                     }
-                    +"Start"
-                }
-                td {
-                    input {
-                        attrs.type = InputType.date
+                    td {
+                        input {
+                            attrs.onChange = {
+                                setTitle((it.target as HTMLInputElement).value)
+                            }
+                            attrs.required = true
+                            attrs.value = title
+                        }
                     }
                 }
-            }
-            tr {
-                td { +"End" }
-                td {
-                    input {
-                        attrs.type = InputType.date
+                tr {
+                    td { +"Start" }
+                    td {
+                        input(type = date) {
+                            attrs.onChange = {
+                                setStartDate((it.target as HTMLInputElement).value)
+                            }
+                            attrs.required = true
+                            attrs.value = startDate
+                        }
                     }
                 }
-            }
-            tr {
-                td { +"Include weekends?" }
-                td {
-                    input {
-                        attrs.type = InputType.checkbox
+                tr {
+                    td { +"End" }
+                    td {
+                        input(type = date) {
+                            attrs.onChange = {
+                                setEndDate((it.target as HTMLInputElement).value)
+                            }
+                            attrs.required = true
+                            attrs.value = endDate
+                        }
+                    }
+                }
+                tr {
+                    td { +"Include weekends?" }
+                    td {
+                        input(type = checkBox) {
+                            attrs.onChange = {
+                                console.log((it.target as HTMLInputElement).value)
+                                setIncludeWeekends((it.target as HTMLInputElement).value == "true")
+                            }
+                        }
                     }
                 }
             }
         }
-    }
 
-    input {
-        attrs.type = InputType.submit
+        input(type = submit) {
+            css {
+                width = LinearDimension("365px")
+            }
+        }
     }
 }

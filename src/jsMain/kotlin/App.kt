@@ -47,7 +47,14 @@ val app = fc<Props> {
                     }
                 }
             } else {
-                child(createPoll)
+                child(createPoll) {
+                    attrs.addPoll = { poll ->
+                        scope.launch {
+                            addPoll(poll)
+                            polls = getPolls()
+                        }
+                    }
+                }
 
                 if (polls.isNotEmpty()) {
                     child(yourPolls) {
