@@ -1,10 +1,8 @@
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class User(val desc: String, val priority: Int) {
-    val id: Int = desc.hashCode() // TODO UUID
-
+data class User(var id: String?, val name: String) {
     companion object {
-        const val path = "/calendar-poll"
+        const val path = "/user"
     }
 }

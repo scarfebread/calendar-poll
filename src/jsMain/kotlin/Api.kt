@@ -24,3 +24,18 @@ suspend fun addPoll(poll: Poll) {
 suspend fun deletePoll(poll: Poll) {
     jsonClient.delete<Unit>(endpoint + Poll.path + "/${poll.id}")
 }
+
+suspend fun createUser(user: User) {
+    jsonClient.post<Unit>(endpoint + User.path) {
+        contentType(ContentType.Application.Json)
+        body = User("12345", "34324")
+    }
+}
+
+suspend fun getUser(): User? {
+    return try {
+        jsonClient.get(endpoint + User.path)
+    } catch (e: Exception) {
+        null
+    }
+}

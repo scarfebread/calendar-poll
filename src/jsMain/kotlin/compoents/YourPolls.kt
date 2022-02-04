@@ -7,11 +7,11 @@ import react.dom.html.ReactHTML.li
 import react.dom.html.ReactHTML.ul
 import react.fc
 
-external interface InputProps : Props {
+external interface YourPollsProps : Props {
     var polls: List<Poll>
 }
 
-val yourPolls = fc<InputProps> { props ->
+val yourPolls = fc<YourPollsProps> { props ->
     h2 {
         +"Your polls"
     }

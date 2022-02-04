@@ -1,7 +1,6 @@
-import compoents.createPoll
-import compoents.yourPolls
-import compoents.header
+import compoents.*
 import compoents.footer
+import compoents.header
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
@@ -16,10 +15,12 @@ private val scope = MainScope()
 
 val app = fc<Props> {
     var polls by useState(emptyList<Poll>())
+    var user by useState<User?>(null)
 
     useEffectOnce {
         scope.launch {
             polls = getPolls()
+            user = getUser()
         }
     }
 
@@ -35,11 +36,23 @@ val app = fc<Props> {
                 marginLeft = LinearDimension("50px")
             }
 
-            child(createPoll)
+            if (user == null) {
+                child(createUser) {
+                    attrs.createUser = { name ->
+                        scope.launch {
+                            // TODO should be the response from post to make sure the user is created
+                            createUser(User(null, name))
+                            user = User(null, name)
+                        }
+                    }
+                }
+            } else {
+                child(createPoll)
 
-            if (polls.isNotEmpty()) {
-                child(yourPolls) {
-                    attrs.polls = polls
+                if (polls.isNotEmpty()) {
+                    child(yourPolls) {
+                        attrs.polls = polls
+                    }
                 }
             }
         }
