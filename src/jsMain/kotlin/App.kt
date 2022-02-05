@@ -67,6 +67,7 @@ val app = fc<Props> {
                         }
                         this.polls = polls
                         this.currentPoll = currentPoll
+                        this.setCurrentPoll = setCurrentPoll
                     }
                 }
             }

@@ -42,7 +42,6 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
-
         val jvmMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-serialization:$ktorVersion")
@@ -53,7 +52,11 @@ kotlin {
                 implementation("org.litote.kmongo:kmongo-coroutine-serialization:$kmongoVersion")
             }
         }
-
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
         val jsMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-js:$ktorVersion")
