@@ -1,11 +1,10 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
-val kotlinVersion = "1.5.31"
+val kotlinVersion = "1.6.10"
 val serializationVersion = "1.3.0"
 val ktorVersion = "1.6.7"
 val logbackVersion = "1.2.3"
 val reactVersion = "17.0.2-pre.265-kotlin-1.5.31"
-val kmongoVersion = "4.3.0"
 
 plugins {
     kotlin("multiplatform") version "1.5.31"
@@ -13,7 +12,7 @@ plugins {
     kotlin("plugin.serialization") version "1.5.31"
 }
 
-group = "org.example"
+group = "uk.co.scarfebread"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -49,7 +48,6 @@ kotlin {
                 implementation("io.ktor:ktor-server-netty:$ktorVersion")
                 implementation("io.ktor:ktor-server-sessions:$ktorVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
-                implementation("org.litote.kmongo:kmongo-coroutine-serialization:$kmongoVersion")
             }
         }
         val jvmTest by getting {
