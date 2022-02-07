@@ -2,6 +2,7 @@ package compoents.calendar
 
 import Poll
 import react.Props
+import react.dom.html.ReactHTML.td
 import react.dom.html.ReactHTML.tr
 import react.dom.table
 import react.dom.tbody
@@ -21,16 +22,30 @@ val calendar = fc<CalendarProps> { props ->
 
     table {
         tbody {
+            tr {
+                td { +"Monday" }
+                td { +"Tuesday" }
+                td { +"Wednesday" }
+                td { +"Thursday" }
+                td { +"Friday" }
+
+                if (props.poll.weekends) {
+                    td { +"Saturday" }
+                    td { +"Sunday" }
+                }
+            }
             while (renderCalendar) {
                 tr {
                     val days = calendar.filter { day -> day.week == week }
                     for (dayIndex in 1..daysInWeek) {
                         val dayOfWeek = days.firstOrNull { day -> day.day == dayIndex }
+
                         child(day) {
                             attrs {
                                 this.day = dayOfWeek
                             }
                         }
+
                         if (dayOfWeek != null && dayOfWeek.date == props.poll.end) {
                             renderCalendar = false
                             break
