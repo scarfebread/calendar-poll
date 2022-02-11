@@ -32,7 +32,12 @@ val app = fc<Props> {
             fontFamily = "Courier New"
         }
 
-        child(header)
+        child(header) {
+            attrs {
+                this.setCurrentPoll = setCurrentPoll
+                this.currentPoll = currentPoll
+            }
+        }
 
         div {
             css {
