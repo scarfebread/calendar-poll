@@ -11,6 +11,8 @@ import io.ktor.sessions.*
 import repository.PollRepository
 import repository.UserRepository
 import service.generateCalendar
+import service.validateEnd
+import service.validateStart
 import session.UserSession
 import session.UserSession.Companion.generateString
 
@@ -45,6 +47,8 @@ fun Route.poll(pollRepository: PollRepository, userRepository: UserRepository) {
 
             poll.createdBy = session.id
             poll.id = generateString(20)
+            poll.start = validateStart(poll.start, poll.weekends)
+            poll.end = validateEnd(poll.end, poll.weekends)
             poll.calendar = generateCalendar(poll.start, poll.end, poll.weekends)
             pollRepository.save(poll)
 

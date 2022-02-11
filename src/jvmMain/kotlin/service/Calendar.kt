@@ -3,21 +3,22 @@ package service
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+private val FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
 fun generateCalendar(startDate: String, endDate: String, includeWeekends: Boolean): List<Calendar.Day> {
-    val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    val start = LocalDate.parse(startDate, dateFormat);
-    val end = LocalDate.parse(endDate, dateFormat);
     val daysInWeek = if (includeWeekends) 7 else 5
-    var currentPosition = LocalDate.from(start)
+    var currentPosition = LocalDate.from(
+        LocalDate.parse(startDate, FORMAT)
+    )
     val calendar = mutableListOf<Calendar.Day>()
     var week = 1
 
-    while (currentPosition <= end) {
+    while (currentPosition <= LocalDate.parse(endDate, FORMAT)) {
         val dayOfWeek = currentPosition.dayOfWeek.value
 
         if (dayOfWeek <= daysInWeek) {
             calendar.add(
-                Calendar.Day(currentPosition.format(dateFormat), week, currentPosition.dayOfWeek.value)
+                Calendar.Day(currentPosition.format(FORMAT), week, currentPosition.dayOfWeek.value)
             )
 
             if (dayOfWeek == daysInWeek) {
@@ -29,4 +30,26 @@ fun generateCalendar(startDate: String, endDate: String, includeWeekends: Boolea
     }
 
     return calendar
+}
+
+fun validateStart(date: String, weekends: Boolean): String {
+    val start = LocalDate.parse(date, FORMAT)
+    val dayOfWeek = start.dayOfWeek.value
+
+    return if (!weekends && dayOfWeek > 5) {
+        start.plusDays(8L - dayOfWeek).format(FORMAT)
+    } else {
+        date
+    }
+}
+
+fun validateEnd(date: String, weekends: Boolean): String {
+    val end = LocalDate.parse(date, FORMAT)
+    val dayOfWeek = end.dayOfWeek.value
+
+    return if (!weekends && dayOfWeek > 5) {
+        end.minusDays(dayOfWeek - 5L).format(FORMAT)
+    } else {
+        date
+    }
 }
