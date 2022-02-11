@@ -27,7 +27,7 @@ val day = fc<DayProps> { props ->
         div {
             css {
                 height = LinearDimension("50px")
-                width= LinearDimension("70px")
+                width= LinearDimension("90px")
                 textAlign = TextAlign.center
                 borderStyle = BorderStyle.solid
                 borderColor = if (hover || voted) Color.black else Color.grey

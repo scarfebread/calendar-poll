@@ -1,12 +1,15 @@
 package compoents.calendar
 
 import Poll
+import kotlinx.css.TextAlign
+import kotlinx.css.textAlign
 import react.Props
 import react.dom.html.ReactHTML.td
-import react.dom.html.ReactHTML.tr
 import react.dom.table
 import react.dom.tbody
 import react.fc
+import styled.css
+import styled.styledTr as tr
 
 external interface CalendarProps : Props {
     var poll: Poll
@@ -23,6 +26,10 @@ val calendar = fc<CalendarProps> { props ->
     table {
         tbody {
             tr {
+                css {
+                    textAlign = TextAlign.center
+                }
+
                 td { +"Monday" }
                 td { +"Tuesday" }
                 td { +"Wednesday" }
