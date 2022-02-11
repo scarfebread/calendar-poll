@@ -1,17 +1,15 @@
 package repository
 
 import Poll
+import org.litote.kmongo.coroutine.CoroutineCollection
+import org.litote.kmongo.eq
 
-class PollRepository {
-    private val polls = mutableListOf<Poll>()
-
-    fun save(poll: Poll) {
-        polls.add(poll)
+class PollRepository(private val collection: CoroutineCollection<Poll>) {
+    suspend fun save(poll: Poll) {
+        collection.insertOne(poll)
     }
 
-    fun findById(id: String): Poll? {
-        return polls.firstOrNull { poll ->
-            poll.id == id
-        }
+    suspend fun findById(id: String): Poll? {
+        return collection.findOne(Poll::id eq id)
     }
 }

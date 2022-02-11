@@ -5,6 +5,7 @@ val serializationVersion = "1.3.0"
 val ktorVersion = "1.6.7"
 val logbackVersion = "1.2.3"
 val reactVersion = "17.0.2-pre.265-kotlin-1.5.31"
+val kmongoVersion = "4.3.0"
 
 plugins {
     kotlin("multiplatform") version "1.5.31"
@@ -48,6 +49,8 @@ kotlin {
                 implementation("io.ktor:ktor-server-netty:$ktorVersion")
                 implementation("io.ktor:ktor-server-sessions:$ktorVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
+                implementation("org.litote.kmongo:kmongo-coroutine-serialization:$kmongoVersion")
             }
         }
         val jvmTest by getting {

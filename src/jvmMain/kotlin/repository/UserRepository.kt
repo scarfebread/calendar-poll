@@ -1,26 +1,20 @@
 package repository
 
 import User
+import com.mongodb.client.model.UpdateOptions
+import org.litote.kmongo.coroutine.CoroutineCollection
+import org.litote.kmongo.eq
 
-class UserRepository {
-    private val users = mutableListOf<User>()
-
-    fun save(user: User) {
-        if (user.id != null) {
-            findById(user.id!!)?.apply {
-                this.name = user.name
-                this.polls = user.polls
-                users.add(this)
-                return
-            }
-        }
-
-        users.add(user)
+class UserRepository(private val collection: CoroutineCollection<User>) {
+    suspend fun save(user: User) {
+        collection.updateOne(
+            User::id eq user.id,
+            user,
+            UpdateOptions().upsert(true)
+        )
     }
 
-    fun findById(id: String): User? {
-        return users.firstOrNull { user ->
-            user.id == id
-        }
+    suspend fun findById(id: String): User? {
+        return collection.findOne(User::id eq id)
     }
 }
