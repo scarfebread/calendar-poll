@@ -37,4 +37,27 @@ class PollRepository(private val collection: CoroutineCollection<Poll>) {
             update,
         )
     }
+
+    suspend fun deleteVote(vote: Vote) {
+        // TODO nicer way to do this?
+        val query = Document(
+            "\$and", listOf(
+                Poll::id eq vote.pollId,
+                Document("calendar.date", vote.date)
+            )
+        )
+
+        val update = Document(
+            "\$pull",
+            Document(
+                "calendar.$.votes",
+                Document("sessionId", vote.sessionId)
+            )
+        )
+
+        collection.updateOne(
+            query,
+            update,
+        )
+    }
 }

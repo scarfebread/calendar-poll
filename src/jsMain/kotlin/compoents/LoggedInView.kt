@@ -2,7 +2,7 @@ package compoents
 
 import Poll
 import User
-import Vote
+import service.VoteService
 import react.Props
 import react.StateSetter
 import react.fc
@@ -13,7 +13,7 @@ external interface LoggedInViewProps : Props {
     var user: User
     var addPoll: (Poll) -> Unit
     var setCurrentPoll: StateSetter<Poll?>
-    var vote: (Vote) -> Unit
+    var voteService: VoteService
 }
 
 val loggedInView = fc<LoggedInViewProps> { props ->
@@ -21,7 +21,7 @@ val loggedInView = fc<LoggedInViewProps> { props ->
         child(viewPoll) {
             attrs {
                 poll = props.currentPoll!!
-                vote = props.vote
+                voteService = props.voteService
                 user = props.user
             }
         }

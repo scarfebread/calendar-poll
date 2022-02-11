@@ -2,6 +2,7 @@ package compoents.calendar
 
 import User
 import Vote
+import service.VoteService
 import kotlinx.css.*
 import react.Props
 import react.dom.html.ReactHTML.td
@@ -17,7 +18,7 @@ import styled.styledDiv as div
 
 external interface DayProps : Props {
     var day: Calendar.Day?
-    var vote: (Vote) -> Unit
+    var voteService: VoteService
     var pollId: String
     var user: User
 }
@@ -26,6 +27,7 @@ val day = fc<DayProps> { props ->
     val (hover, setHover) = useState(false)
     val (voted, setVoted) = useState(false)
     val (votes, setVotes) = useState(0)
+    val voteService = props.voteService
 
     td {
         div {
@@ -61,10 +63,11 @@ val day = fc<DayProps> { props ->
                     if (voted) {
                         setVoted(false)
                         setVotes(votes - 1)
+                        voteService.cancel(Vote(props.pollId, day.date))
                     } else {
                         setVoted(true)
                         setVotes(votes + 1)
-                        props.vote(Vote(props.pollId, day.date))
+                        voteService.vote(Vote(props.pollId, day.date))
                     }
                 }
 

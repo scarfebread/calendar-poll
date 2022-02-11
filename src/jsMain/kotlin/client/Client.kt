@@ -1,3 +1,8 @@
+package client
+
+import Poll
+import User
+import Vote
 import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
@@ -41,6 +46,13 @@ class Client {
 
     suspend fun vote(vote: Vote) {
         jsonClient.post<Unit>(endpoint + Vote.path) {
+            contentType(ContentType.Application.Json)
+            body = vote
+        }
+    }
+
+    suspend fun cancelVote(vote: Vote) {
+        jsonClient.delete<Unit>(endpoint + Vote.path) {
             contentType(ContentType.Application.Json)
             body = vote
         }

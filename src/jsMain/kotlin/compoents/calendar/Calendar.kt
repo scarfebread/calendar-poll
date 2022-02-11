@@ -2,7 +2,7 @@ package compoents.calendar
 
 import Poll
 import User
-import Vote
+import service.VoteService
 import kotlinx.css.TextAlign
 import kotlinx.css.textAlign
 import react.Props
@@ -15,8 +15,8 @@ import styled.styledTr as tr
 
 external interface CalendarProps : Props {
     var poll: Poll
-    var vote: (Vote) -> Unit
     var user: User
+    var voteService: VoteService
 }
 
 val calendar = fc<CalendarProps> { props ->
@@ -55,7 +55,7 @@ val calendar = fc<CalendarProps> { props ->
                             attrs {
                                 this.day = dayOfWeek
                                 this.pollId = props.poll.id!!
-                                this.vote = props.vote
+                                this.voteService = props.voteService
                                 this.user = props.user
                             }
                         }

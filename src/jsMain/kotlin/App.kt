@@ -1,3 +1,4 @@
+import client.Client
 import compoents.*
 import compoents.footer
 import compoents.header
@@ -8,6 +9,7 @@ import react.Props
 import react.fc
 import react.useEffectOnce
 import react.useState
+import service.VoteService
 import styled.css
 import styled.styledDiv as div
 
@@ -77,11 +79,7 @@ val app = fc<Props> {
                         this.user = user!!
                         this.currentPoll = currentPoll
                         this.setCurrentPoll = setCurrentPoll
-                        this.vote = { vote ->
-                            scope.launch {
-                                client.vote(vote)
-                            }
-                        }
+                        this.voteService = VoteService(scope, client)
                     }
                 }
             }
