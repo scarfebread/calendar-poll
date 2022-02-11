@@ -20,10 +20,13 @@ fun Route.vote(pollRepository: PollRepository, userRepository: UserRepository) {
         } else {
             val user = userRepository.findById(session.id)!!
             val vote = call.receive<Vote>()
+
             vote.sessionId = user.id
             vote.name = user.name
+
             pollRepository.addVote(vote)
-            call.respond(HttpStatusCode.Created)
+
+            call.respond(pollRepository.findById(vote.pollId)!!)
         }
     }
 
@@ -35,10 +38,13 @@ fun Route.vote(pollRepository: PollRepository, userRepository: UserRepository) {
         } else {
             val user = userRepository.findById(session.id)!!
             val vote = call.receive<Vote>()
+
             vote.sessionId = user.id
             vote.name = user.name
+
             pollRepository.deleteVote(vote)
-            call.respond(HttpStatusCode.Accepted)
+
+            call.respond(pollRepository.findById(vote.pollId)!!)
         }
     }
 }

@@ -44,15 +44,15 @@ class Client {
         }
     }
 
-    suspend fun vote(vote: Vote) {
-        jsonClient.post<Unit>(endpoint + Vote.path) {
+    suspend fun vote(vote: Vote): Poll {
+        return jsonClient.post(endpoint + Vote.path) {
             contentType(ContentType.Application.Json)
             body = vote
         }
     }
 
-    suspend fun cancelVote(vote: Vote) {
-        jsonClient.delete<Unit>(endpoint + Vote.path) {
+    suspend fun cancelVote(vote: Vote): Poll {
+        return jsonClient.delete(endpoint + Vote.path) {
             contentType(ContentType.Application.Json)
             body = vote
         }
