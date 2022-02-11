@@ -15,6 +15,7 @@ import repository.UserRepository
 import routes.index
 import routes.poll
 import routes.user
+import routes.vote
 import session.UserSession
 
 fun main() {
@@ -50,6 +51,7 @@ fun main() {
             index()
             poll(pollRepository, userRepository)
             user(userRepository)
+            vote(pollRepository, userRepository)
         }
     }.start(wait = true)
 }

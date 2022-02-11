@@ -1,5 +1,7 @@
 package compoents.calendar
 
+import User
+import Vote
 import kotlinx.css.*
 import react.Props
 import react.dom.html.ReactHTML.td
@@ -15,7 +17,9 @@ import styled.styledDiv as div
 
 external interface DayProps : Props {
     var day: Calendar.Day?
-    var vote: (Calendar.Day) -> Unit
+    var vote: (Vote) -> Unit
+    var pollId: String
+    var user: User
 }
 
 val day = fc<DayProps> { props ->
@@ -45,6 +49,10 @@ val day = fc<DayProps> { props ->
 
                 useEffectOnce {
                     setVotes(day.votes.size)
+
+                    if (day.votes.firstOrNull { it.sessionId == props.user.id } != null)  {
+                        setVoted(true)
+                    }
                 }
 
                 attrs.onMouseOver = { setHover(true) }
@@ -56,6 +64,7 @@ val day = fc<DayProps> { props ->
                     } else {
                         setVoted(true)
                         setVotes(votes + 1)
+                        props.vote(Vote(props.pollId, day.date))
                     }
                 }
 

@@ -14,6 +14,8 @@ import styled.styledDiv as div
 private val scope = MainScope()
 
 val app = fc<Props> {
+    val client = Client()
+
     var polls by useState(emptyList<Poll>())
     var user by useState<User?>(null)
     val (currentPoll, setCurrentPoll) = useState<Poll?>(null)
@@ -21,8 +23,8 @@ val app = fc<Props> {
 
     useEffectOnce {
         scope.launch {
-            polls = getPolls()
-            user = getUser()
+            polls = client.getPolls()
+            user = client.getUser()
             setLoaded(true)
         }
     }
@@ -49,7 +51,7 @@ val app = fc<Props> {
                     attrs.createUser = { name ->
                         scope.launch {
                             // TODO should be the response from post to make sure the user is created
-                            createUser(User(null, name))
+                            client.createUser(User(null, name))
                             user = User(null, name)
                         }
                     }
@@ -67,14 +69,19 @@ val app = fc<Props> {
                     attrs {
                         addPoll = { poll ->
                             scope.launch {
-                                // TODO naming
-                                addPollApi(poll)
-                                polls = getPolls()
+                                client.addPoll(poll)
+                                polls = client.getPolls()
                             }
                         }
                         this.polls = polls
+                        this.user = user!!
                         this.currentPoll = currentPoll
                         this.setCurrentPoll = setCurrentPoll
+                        this.vote = { vote ->
+                            scope.launch {
+                                client.vote(vote)
+                            }
+                        }
                     }
                 }
             }
