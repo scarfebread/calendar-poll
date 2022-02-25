@@ -26,7 +26,14 @@ fun Route.user(userRepository: UserRepository) {
         val user = call.receive<User>()
         user.id = session!!.id
 
-        userRepository.save(user)
+        val storedUser = userRepository.findById(user.id!!)
+
+        if (storedUser == null) {
+            userRepository.save(user)
+        } else {
+            storedUser.name = user.name
+            userRepository.save(storedUser)
+        }
 
         call.respond(HttpStatusCode.Accepted, "Accepted")
     }
