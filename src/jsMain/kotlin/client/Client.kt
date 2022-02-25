@@ -59,6 +59,6 @@ class Client {
     }
 
     companion object {
-        const val endpoint = "http://0.0.0.0:9090"
+        const val endpoint = "http://localhost:9090"
     }
 }
