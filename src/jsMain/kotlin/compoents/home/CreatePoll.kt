@@ -1,4 +1,4 @@
-package compoents
+package compoents.home
 
 import Poll
 import kotlinx.css.LinearDimension

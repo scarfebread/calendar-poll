@@ -1,4 +1,4 @@
-package compoents
+package compoents.home
 
 import kotlinx.css.LinearDimension
 import kotlinx.css.TextAlign

@@ -2,6 +2,7 @@ package compoents
 
 import Poll
 import User
+import compoents.home.createPoll
 import compoents.viewpoll.topVotes
 import compoents.viewpoll.viewPoll
 import compoents.yourpolls.yourPolls
@@ -26,7 +27,7 @@ val loggedInView = fc<LoggedInViewProps> { props ->
     if (props.currentPoll != null) {
         div {
             css {
-                width = LinearDimension("795px")
+                width = LinearDimension("770px")
                 margin = "auto"
                 display = Display.flex
             }

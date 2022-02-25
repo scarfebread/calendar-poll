@@ -16,8 +16,8 @@ import react.dom.html.ReactHTML.td
 import react.dom.html.ReactHTML.tr
 import react.fc
 import react.useState
+import service.formatDate
 import styled.css
-import kotlin.js.Date
 import styled.styledSpan as span
 
 external interface PollOverviewProps : Props {
@@ -68,8 +68,4 @@ val pollOverview = fc<PollOverviewProps> { props ->
             }
         }
     }
-}
-
-private fun formatDate(date: String): String {
-    return Date(date).toLocaleDateString("en-GB")
 }

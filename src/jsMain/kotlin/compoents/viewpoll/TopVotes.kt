@@ -6,6 +6,7 @@ import react.Props
 import react.dom.h2
 import react.dom.tbody
 import react.fc
+import service.formatDate
 import styled.css
 import styled.styledDiv as div
 import styled.styledTable as table
@@ -30,6 +31,8 @@ val topVotes = fc<TopVotesProps> { props ->
 
         h2 { +"Top Votes" }
         table {
+            val cellPadding = LinearDimension("50px")
+
             css {
                 textAlign = TextAlign.center
             }
@@ -37,7 +40,7 @@ val topVotes = fc<TopVotesProps> { props ->
                 tr {
                     td {
                         css {
-                            paddingRight = LinearDimension("75px")
+                            paddingRight = cellPadding
                         }
                         +"Date"
                     }
@@ -47,9 +50,9 @@ val topVotes = fc<TopVotesProps> { props ->
                     tr {
                         td {
                             css {
-                                paddingRight = LinearDimension("75px")
+                                paddingRight = cellPadding
                             }
-                            +day.date
+                            +formatDate(day.date)
                         }
                         td { +day.votes.size.toString() }
                     }
