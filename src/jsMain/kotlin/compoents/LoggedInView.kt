@@ -48,7 +48,7 @@ val loggedInView = fc<LoggedInViewProps> { props ->
     } else {
         div {
             css {
-                width = LinearDimension("745px")
+                width = LinearDimension("950px")
                 margin = "auto"
                 display = Display.flex
             }

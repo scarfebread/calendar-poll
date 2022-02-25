@@ -17,6 +17,7 @@ import react.dom.html.ReactHTML.tr
 import react.fc
 import react.useState
 import styled.css
+import kotlin.js.Date
 import styled.styledSpan as span
 
 external interface PollOverviewProps : Props {
@@ -42,9 +43,9 @@ val pollOverview = fc<PollOverviewProps> { props ->
                 }
             }
         }
-        td { +poll.start }
+        td { +formatDate(poll.start) }
         td { +"-" }
-        td { +poll.end }
+        td { +formatDate(poll.end) }
         td {
             span {
                 attrs.classes = setOf("material-icons")
@@ -67,4 +68,8 @@ val pollOverview = fc<PollOverviewProps> { props ->
             }
         }
     }
+}
+
+private fun formatDate(date: String): String {
+    return Date(date).toLocaleDateString("en-GB")
 }
