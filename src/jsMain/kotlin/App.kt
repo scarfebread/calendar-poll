@@ -63,6 +63,7 @@ val app = fc<Props> {
                     polls.forEach { poll ->
                         if (poll.current) {
                             setCurrentPoll(poll)
+                            poll.current = false
                         }
                     }
                 }
