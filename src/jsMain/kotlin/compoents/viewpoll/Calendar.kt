@@ -1,4 +1,4 @@
-package compoents.calendar
+package compoents.viewpoll
 
 import Poll
 import User

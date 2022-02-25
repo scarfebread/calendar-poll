@@ -1,9 +1,8 @@
-package compoents
+package compoents.viewpoll
 
 import Poll
 import User
 import service.VoteService
-import compoents.calendar.calendar
 import kotlinx.css.*
 import react.Props
 import react.dom.html.ReactHTML.h2
@@ -20,8 +19,7 @@ external interface ViewPollProps : Props {
 val viewPoll = fc<ViewPollProps> { props ->
     div {
         css {
-            marginLeft = LinearDimension("auto")
-            marginRight = LinearDimension("auto")
+            marginRight = LinearDimension("35px")
         }
 
         h2 { +props.poll.title }

@@ -24,6 +24,7 @@ val header = fc<HeaderProps> { props ->
             height = LinearDimension("100px")
             backgroundColor = Color.lightGray
             textAlign = TextAlign.center
+            marginBottom = LinearDimension("20px")
         }
 
         if (props.currentPoll != null) {

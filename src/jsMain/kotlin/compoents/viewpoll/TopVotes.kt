@@ -1,4 +1,4 @@
-package compoents
+package compoents.viewpoll
 
 import Poll
 import kotlinx.css.*
@@ -25,8 +25,7 @@ val topVotes = fc<TopVotesProps> { props ->
 
     div {
         css {
-            marginLeft = LinearDimension("auto")
-            marginRight = LinearDimension("auto")
+            marginLeft = LinearDimension("35px")
         }
 
         h2 { +"Top Votes" }
@@ -38,7 +37,7 @@ val topVotes = fc<TopVotesProps> { props ->
                 tr {
                     td {
                         css {
-                            paddingRight = LinearDimension("100px")
+                            paddingRight = LinearDimension("75px")
                         }
                         +"Date"
                     }
@@ -48,7 +47,7 @@ val topVotes = fc<TopVotesProps> { props ->
                     tr {
                         td {
                             css {
-                                paddingRight = LinearDimension("100px")
+                                paddingRight = LinearDimension("75px")
                             }
                             +day.date
                         }

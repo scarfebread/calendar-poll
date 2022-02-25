@@ -2,6 +2,8 @@ package compoents
 
 import Poll
 import User
+import compoents.viewpoll.topVotes
+import compoents.viewpoll.viewPoll
 import compoents.yourpolls.yourPolls
 import kotlinx.css.*
 import service.VoteService
@@ -24,7 +26,7 @@ val loggedInView = fc<LoggedInViewProps> { props ->
     if (props.currentPoll != null) {
         div {
             css {
-                width = LinearDimension("75%")
+                width = LinearDimension("795px")
                 margin = "auto"
                 display = Display.flex
             }
@@ -44,14 +46,32 @@ val loggedInView = fc<LoggedInViewProps> { props ->
             }
         }
     } else {
-        child(createPoll) {
-            attrs.addPoll = props.addPoll
-        }
+        div {
+            css {
+                width = LinearDimension("745px")
+                margin = "auto"
+                display = Display.flex
+            }
 
-        if (props.polls.isNotEmpty()) {
-            child(yourPolls) {
-                attrs.polls = props.polls
-                attrs.setCurrentPoll = props.setCurrentPoll
+            div {
+                css {
+                    marginRight = LinearDimension("35px")
+                }
+
+                child(createPoll) {
+                    attrs.addPoll = props.addPoll
+                }
+            }
+
+            div {
+                css {
+                    marginLeft = LinearDimension("35px")
+                }
+
+                child(yourPolls) {
+                    attrs.polls = props.polls
+                    attrs.setCurrentPoll = props.setCurrentPoll
+                }
             }
         }
     }

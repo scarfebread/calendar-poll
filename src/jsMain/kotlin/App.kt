@@ -44,10 +44,6 @@ val app = fc<Props> {
         }
 
         div {
-            css {
-                marginLeft = LinearDimension("50px")
-            }
-
             if (loaded && user?.name == null) {
                 child(createUser) {
                     attrs.createUser = { name ->
