@@ -32,7 +32,6 @@ val day = fc<DayProps> { props ->
     td {
         div {
             css {
-                cursor = Cursor.pointer
                 height = LinearDimension("50px")
                 width= LinearDimension("90px")
                 textAlign = TextAlign.center
@@ -44,6 +43,9 @@ val day = fc<DayProps> { props ->
                     Color.lightBlue
                 } else {
                     Color.white
+                }
+                if (props.day != null) {
+                    cursor = Cursor.pointer
                 }
             }
 

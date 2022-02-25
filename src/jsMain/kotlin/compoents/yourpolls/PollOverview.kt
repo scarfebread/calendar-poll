@@ -1,6 +1,8 @@
-package compoents
+package compoents.yourpolls
 
 import Poll
+import client.Client
+import kotlinx.browser.window
 import kotlinx.css.Cursor
 import kotlinx.css.cursor
 import kotlinx.css.opacity
@@ -48,6 +50,9 @@ val pollOverview = fc<PollOverviewProps> { props ->
                 attrs.classes = setOf("material-icons")
                 attrs.onClickFunction = {
                     setCopied(true)
+                    window.navigator.clipboard.writeText(
+                        Client.endpoint + Poll.path + "/${poll.id}"
+                    )
                 }
 
                 css {

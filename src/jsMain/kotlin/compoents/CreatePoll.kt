@@ -88,7 +88,6 @@ val createPoll = fc<CreatePollProps> { props ->
                     td {
                         input(type = checkBox) {
                             attrs.onChange = {
-                                console.log((it.target as HTMLInputElement).value)
                                 setIncludeWeekends((it.target as HTMLInputElement).value == "true")
                             }
                         }

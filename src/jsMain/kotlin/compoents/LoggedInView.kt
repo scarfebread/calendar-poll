@@ -2,6 +2,7 @@ package compoents
 
 import Poll
 import User
+import compoents.yourpolls.yourPolls
 import kotlinx.css.*
 import service.VoteService
 import react.Props

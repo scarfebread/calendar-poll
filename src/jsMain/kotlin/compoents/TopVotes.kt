@@ -20,7 +20,7 @@ val topVotes = fc<TopVotesProps> { props ->
     val days = props.poll.calendar!!
         .filter { day -> day.votes.size > 0 }
         .sortedWith(
-            compareBy { day -> day.votes.size }
+            compareByDescending { day -> day.votes.size }
         )
 
     div {

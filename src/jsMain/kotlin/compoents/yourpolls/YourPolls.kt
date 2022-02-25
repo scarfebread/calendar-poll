@@ -1,4 +1,4 @@
-package compoents
+package compoents.yourpolls
 
 import Poll
 import react.Props
@@ -24,7 +24,7 @@ val yourPolls = fc<YourPollsProps> { props ->
                 child(pollOverview) {
                     attrs {
                         this.poll = poll
-                        this.setCurrentPoll = setCurrentPoll
+                        this.setCurrentPoll = props.setCurrentPoll
                     }
                 }
             }
