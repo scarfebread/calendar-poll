@@ -32,6 +32,7 @@ val day = fc<DayProps> { props ->
     td {
         div {
             css {
+                cursor = Cursor.pointer
                 height = LinearDimension("50px")
                 width= LinearDimension("90px")
                 textAlign = TextAlign.center

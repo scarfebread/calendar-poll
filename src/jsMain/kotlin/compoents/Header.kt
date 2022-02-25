@@ -2,6 +2,7 @@ package compoents
 
 import Poll
 import kotlinx.css.*
+import kotlinx.html.classes
 import react.Props
 import react.StateSetter
 import react.dom.html.ReactHTML.a
@@ -28,18 +29,24 @@ val header = fc<HeaderProps> { props ->
         if (props.currentPoll != null) {
             a {
                 span {
-                    val iconSize = LinearDimension("35px")
                     val iconPosition = LinearDimension("30px")
 
+                    attrs.classes = setOf("material-icons")
+
                     css {
-                        width = iconSize
-                        height = iconSize
                         position = Position.absolute;
                         left = iconPosition
                         top = iconPosition
-                        background = "url(images/home_black_24dp.svg)"
-                        backgroundSize = iconSize.value
+                        opacity = 0.5
+                        fontSize = LinearDimension("35px")
+                        cursor = Cursor.pointer
+
+                        hover {
+                            opacity = 1
+                        }
                     }
+
+                    +"home"
                 }
 
                 attrs.onClick = {
