@@ -42,6 +42,11 @@ val app = fc<Props> {
             attrs {
                 this.setCurrentPoll = setCurrentPoll
                 this.currentPoll = currentPoll
+                updatePolls = {
+                    scope.launch {
+                        polls = client.getPolls()
+                    }
+                }
             }
         }
 

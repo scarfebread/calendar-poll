@@ -15,6 +15,7 @@ import styled.styledH1 as h1
 external interface HeaderProps : Props {
     var currentPoll: Poll?
     var setCurrentPoll: StateSetter<Poll?>
+    var updatePolls: () -> Unit
 }
 
 val header = fc<HeaderProps> { props ->
@@ -35,7 +36,7 @@ val header = fc<HeaderProps> { props ->
                     attrs.classes = setOf("material-icons")
 
                     css {
-                        position = Position.absolute;
+                        position = Position.absolute
                         left = iconPosition
                         top = iconPosition
                         opacity = 0.5
@@ -51,6 +52,7 @@ val header = fc<HeaderProps> { props ->
                 }
 
                 attrs.onClick = {
+                    props.updatePolls()
                     props.setCurrentPoll(null)
                 }
             }
