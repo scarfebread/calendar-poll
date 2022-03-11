@@ -24,10 +24,11 @@ fun main() {
             json()
         }
         install(CORS) {
-            method(HttpMethod.Get)
-            method(HttpMethod.Post)
+            method(HttpMethod.Put)
             method(HttpMethod.Delete)
-            anyHost()
+            allowNonSimpleContentTypes = true
+            host("scarfebread.co.uk/", listOf("http", "https"))
+            host("scarfebread.co.uk", listOf("http", "https"))
         }
         install(Compression) {
             gzip()

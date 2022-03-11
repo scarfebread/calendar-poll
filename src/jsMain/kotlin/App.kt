@@ -3,6 +3,7 @@ import compoents.*
 import compoents.footer
 import compoents.header
 import compoents.home.createUser
+import kotlinx.browser.document
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
@@ -17,7 +18,7 @@ import styled.styledDiv as div
 private val scope = MainScope()
 
 val app = fc<Props> {
-    val client = Client()
+    val client = Client(document. location!!.href) // TODO this is dangerous
 
     var polls by useState(emptyList<Poll>())
     var user by useState<User?>(null)

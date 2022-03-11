@@ -9,7 +9,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 
-class Client {
+class Client(private val endpoint: String) {
     private val jsonClient = HttpClient {
         install(JsonFeature) { serializer = KotlinxSerializer() }
     }
@@ -56,9 +56,5 @@ class Client {
             contentType(ContentType.Application.Json)
             body = vote
         }
-    }
-
-    companion object {
-        const val endpoint = "http://localhost:9090"
     }
 }

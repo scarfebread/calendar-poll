@@ -2,6 +2,7 @@ package compoents.yourpolls
 
 import Poll
 import client.Client
+import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.css.Cursor
 import kotlinx.css.cursor
@@ -52,7 +53,7 @@ val pollOverview = fc<PollOverviewProps> { props ->
                 attrs.onClickFunction = {
                     setCopied(true)
                     window.navigator.clipboard.writeText(
-                        Client.endpoint + Poll.path + "/${poll.id}"
+                        document.location!!.href + Poll.path + "/${poll.id}"
                     )
                 }
 
