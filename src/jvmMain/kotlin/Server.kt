@@ -17,6 +17,7 @@ import routes.poll
 import routes.user
 import routes.vote
 import session.UserSession
+import kotlin.time.Duration
 
 fun main() {
     embeddedServer(Netty, 9090) {
@@ -34,7 +35,9 @@ fun main() {
             gzip()
         }
         install(Sessions) {
-            cookie<UserSession>(UserSession.COOKIE_NAME)
+            cookie<UserSession>(UserSession.COOKIE_NAME) {
+                cookie.maxAgeInSeconds = 60 * 60 * 24 * 365 * 50
+            }
         }
 
         val mongo = KMongo.createClient(
