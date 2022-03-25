@@ -31,7 +31,7 @@ fun Route.poll(pollRepository: PollRepository, userRepository: UserRepository) {
             polls.add(poll)
         }
 
-        call.response.cookies.append(Cookie(Poll.cookie, ""))
+        call.response.cookies.append(Cookie(Poll.cookie, "", path = Poll.path))
         call.respond(polls)
     }
 
@@ -82,7 +82,7 @@ fun Route.poll(pollRepository: PollRepository, userRepository: UserRepository) {
                 userRepository.save(user)
             }
 
-            call.response.cookies.append(Cookie("poll_id", pollId))
+            call.response.cookies.append(Cookie(Poll.cookie, pollId))
         }
 
         call.respondRedirect("/")

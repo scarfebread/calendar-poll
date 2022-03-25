@@ -1,8 +1,7 @@
 package compoents.yourpolls
 
 import Poll
-import client.Client
-import kotlinx.browser.document
+import config.Config
 import kotlinx.browser.window
 import kotlinx.css.Cursor
 import kotlinx.css.cursor
@@ -24,10 +23,12 @@ import styled.styledSpan as span
 external interface PollOverviewProps : Props {
     var poll: Poll
     var setCurrentPoll: StateSetter<Poll?>
+    var config: Config
 }
 
 val pollOverview = fc<PollOverviewProps> { props ->
     val poll = props.poll
+    val config = props.config
 
     val (copied, setCopied) = useState(false)
 
@@ -53,7 +54,7 @@ val pollOverview = fc<PollOverviewProps> { props ->
                 attrs.onClickFunction = {
                     setCopied(true)
                     window.navigator.clipboard.writeText(
-                        document.location!!.href + Poll.path + "/${poll.id}"
+                        config.host + Poll.path + "/${poll.id}"
                     )
                 }
 

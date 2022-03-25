@@ -6,6 +6,7 @@ import compoents.home.createPoll
 import compoents.viewpoll.topVotes
 import compoents.viewpoll.viewPoll
 import compoents.yourpolls.yourPolls
+import config.Config
 import kotlinx.css.*
 import service.VoteService
 import react.Props
@@ -21,6 +22,7 @@ external interface LoggedInViewProps : Props {
     var addPoll: (Poll) -> Unit
     var setCurrentPoll: StateSetter<Poll?>
     var voteService: VoteService
+    var config: Config
 }
 
 val loggedInView = fc<LoggedInViewProps> { props ->
@@ -72,6 +74,7 @@ val loggedInView = fc<LoggedInViewProps> { props ->
                 child(yourPolls) {
                     attrs.polls = props.polls
                     attrs.setCurrentPoll = props.setCurrentPoll
+                    attrs.config = props.config
                 }
             }
         }

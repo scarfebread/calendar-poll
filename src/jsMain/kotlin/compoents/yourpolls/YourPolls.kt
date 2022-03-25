@@ -1,6 +1,7 @@
 package compoents.yourpolls
 
 import Poll
+import config.Config
 import react.Props
 import react.StateSetter
 import react.dom.html.ReactHTML.h2
@@ -11,6 +12,7 @@ import react.fc
 external interface YourPollsProps : Props {
     var polls: List<Poll>
     var setCurrentPoll: StateSetter<Poll?>
+    var config: Config
 }
 
 val yourPolls = fc<YourPollsProps> { props ->
@@ -24,7 +26,8 @@ val yourPolls = fc<YourPollsProps> { props ->
                 child(pollOverview) {
                     attrs {
                         this.poll = poll
-                        this.setCurrentPoll = props.setCurrentPoll
+                        setCurrentPoll = props.setCurrentPoll
+                        config = props.config
                     }
                 }
             }

@@ -3,7 +3,7 @@ import compoents.*
 import compoents.footer
 import compoents.header
 import compoents.home.createUser
-import kotlinx.browser.document
+import config.Config
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.css.*
@@ -18,7 +18,8 @@ import styled.styledDiv as div
 private val scope = MainScope()
 
 val app = fc<Props> {
-    val client = Client(document. location!!.href) // TODO this is dangerous
+    val config = Config()
+    val client = Client(config)
 
     var polls by useState(emptyList<Poll>())
     var user by useState<User?>(null)
@@ -84,6 +85,7 @@ val app = fc<Props> {
                         this.currentPoll = currentPoll
                         this.setCurrentPoll = setCurrentPoll
                         this.voteService = VoteService(scope, client, setCurrentPoll)
+                        this.config = config
                     }
                 }
             }
