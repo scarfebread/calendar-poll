@@ -36,8 +36,8 @@ class Client(config: Config) {
         jsonClient.delete<Unit>(host + Poll.path + "/${poll.id}")
     }
 
-    suspend fun createUser(user: User) {
-        jsonClient.post<Unit>(host + User.path) {
+    suspend fun createUser(user: User): User {
+        return jsonClient.post(host + User.path) {
             contentType(ContentType.Application.Json)
             body = user
         }

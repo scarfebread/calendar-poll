@@ -56,9 +56,7 @@ val app = fc<Props> {
                 child(createUser) {
                     attrs.createUser = { name ->
                         scope.launch {
-                            // TODO should be the response from post to make sure the user is created
-                            client.createUser(User(null, name))
-                            user = User(null, name)
+                            user = client.createUser(User(null, name))
                         }
                     }
                 }

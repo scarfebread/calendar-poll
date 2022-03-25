@@ -30,11 +30,11 @@ fun Route.user(userRepository: UserRepository) {
 
         if (storedUser == null) {
             userRepository.save(user)
+            call.respond(HttpStatusCode.Accepted, user)
         } else {
             storedUser.name = user.name
             userRepository.save(storedUser)
+            call.respond(HttpStatusCode.Accepted, storedUser)
         }
-
-        call.respond(HttpStatusCode.Accepted, "Accepted")
     }
 }
