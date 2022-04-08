@@ -19,12 +19,3 @@ aws ecr get-login-password --region eu-west-1 | docker login --username AWS --pa
 failure "AWS login failure"
 
 docker tag ${image} 759614112154.dkr.ecr.eu-west-1.amazonaws.com/calendar-poll:tag
-docker push  759614112154.dkr.ecr.eu-west-1.amazonaws.com/calendar-poll:tag
-failure "Docker push failed"
-
-aws ecs update-service --cluster default --service calendar-poll-service --force-new-deployment | cat
-failure "Deployment failed"
-
-echo "[INFO] Image successfully deployed"
-
-
