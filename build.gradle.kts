@@ -6,6 +6,7 @@ val ktorVersion = "1.6.7"
 val logbackVersion = "1.2.3"
 val reactVersion = "17.0.2-pre.265-kotlin-1.5.31"
 val kmongoVersion = "4.3.0"
+val awsVersion = "2.17.175"
 
 plugins {
     kotlin("multiplatform") version "1.5.31"
@@ -51,6 +52,7 @@ kotlin {
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
                 implementation("org.litote.kmongo:kmongo-coroutine-serialization:$kmongoVersion")
+                implementation("software.amazon.awssdk:dynamodb:$awsVersion")
             }
         }
         val jvmTest by getting {

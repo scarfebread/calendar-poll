@@ -17,7 +17,9 @@ import routes.poll
 import routes.user
 import routes.vote
 import session.UserSession
-import kotlin.time.Duration
+import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+
 
 fun main() {
     embeddedServer(Netty, 9090) {
@@ -48,8 +50,12 @@ fun main() {
         ).coroutine
         val database = mongo.getDatabase("calendar-poll")
 
-        val userRepository = UserRepository(database.getCollection())
-        val pollRepository = PollRepository(database.getCollection())
+        val dynamo = DynamoDbClient.builder()
+            .region(Region.EU_WEST_1)
+            .build()
+
+        val userRepository = UserRepository(database.getCollection(), dynamo)
+        val pollRepository = PollRepository(database.getCollection(), dynamo)
 
         routing {
             index()

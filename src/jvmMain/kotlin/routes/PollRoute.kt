@@ -54,7 +54,7 @@ fun Route.poll(pollRepository: PollRepository, userRepository: UserRepository) {
 
             if (user != null) {
                 user.polls.add(poll.id!!)
-                userRepository.save(user)
+                userRepository.addPollToUser(user, poll.id!!)
             }
 
             call.respond(HttpStatusCode.Created)
@@ -75,11 +75,12 @@ fun Route.poll(pollRepository: PollRepository, userRepository: UserRepository) {
         if (poll != null) {
             if (user == null) {
                 user = User(session.id, null)
+                userRepository.save(user)
             }
 
             if (!user.polls.contains(pollId)) {
                 user.addPoll(pollId)
-                userRepository.save(user)
+                userRepository.addPollToUser(user, pollId)
             }
 
             call.response.cookies.append(Cookie(Poll.cookie, pollId))

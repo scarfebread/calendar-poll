@@ -26,7 +26,7 @@ external interface DayProps : Props {
 val day = fc<DayProps> { props ->
     val (hover, setHover) = useState(false)
     val (voted, setVoted) = useState(false)
-    val (votes, setVotes) = useState(0)
+    val (numberOfVotes, setNumberOfVotes) = useState(0)
     val voteService = props.voteService
 
     td {
@@ -51,11 +51,13 @@ val day = fc<DayProps> { props ->
 
             if (props.day != null) {
                 val day = props.day!!
+                val votes = day.votes
+                val user = props.user
 
                 useEffectOnce {
-                    setVotes(day.votes.size)
+                    setNumberOfVotes(votes.size)
 
-                    if (day.votes.firstOrNull { it.sessionId == props.user.id } != null)  {
+                    if (day.votes.firstOrNull { it.sessionId == user.id } != null)  {
                         setVoted(true)
                     }
                 }
@@ -65,11 +67,11 @@ val day = fc<DayProps> { props ->
                 attrs.onClick = {
                     if (voted) {
                         setVoted(false)
-                        setVotes(votes - 1)
-                        voteService.cancel(Vote(props.pollId, day.date))
+                        setNumberOfVotes(numberOfVotes - 1)
+                        voteService.cancel(votes.first{ it.sessionId == user.id })
                     } else {
                         setVoted(true)
-                        setVotes(votes + 1)
+                        setNumberOfVotes(numberOfVotes + 1)
                         voteService.vote(Vote(props.pollId, day.date))
                     }
                 }
@@ -80,7 +82,7 @@ val day = fc<DayProps> { props ->
                 }
                 h3 {
                     css { marginTop = LinearDimension("0") }
-                    +votes.toString()
+                    +numberOfVotes.toString()
                 }
             }
         }

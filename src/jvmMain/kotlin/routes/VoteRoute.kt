@@ -10,6 +10,7 @@ import io.ktor.sessions.*
 import repository.PollRepository
 import repository.UserRepository
 import session.UserSession
+import session.UserSession.Companion.generateString
 
 fun Route.vote(pollRepository: PollRepository, userRepository: UserRepository) {
     post(Vote.path) {
@@ -21,6 +22,7 @@ fun Route.vote(pollRepository: PollRepository, userRepository: UserRepository) {
             val user = userRepository.findById(session.id)!!
             val vote = call.receive<Vote>()
 
+            vote.id = generateString(20)
             vote.sessionId = user.id
             vote.name = user.name
 
