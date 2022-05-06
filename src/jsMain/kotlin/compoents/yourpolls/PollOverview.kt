@@ -2,6 +2,7 @@ package compoents.yourpolls
 
 import Poll
 import config.Config
+import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.css.Cursor
 import kotlinx.css.cursor
@@ -9,7 +10,6 @@ import kotlinx.css.opacity
 import kotlinx.html.classes
 import kotlinx.html.js.onClickFunction
 import react.Props
-import react.StateSetter
 import react.dom.html.ReactHTML.a
 import react.dom.html.ReactHTML.b
 import react.dom.html.ReactHTML.td
@@ -22,7 +22,7 @@ import styled.styledSpan as span
 
 external interface PollOverviewProps : Props {
     var poll: Poll
-    var setCurrentPoll: StateSetter<Poll?>
+    var setCurrentPoll: (Poll?) -> Unit
     var config: Config
 }
 

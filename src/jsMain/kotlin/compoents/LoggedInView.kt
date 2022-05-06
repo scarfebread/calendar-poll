@@ -20,7 +20,7 @@ external interface LoggedInViewProps : Props {
     var currentPoll: Poll?
     var user: User
     var addPoll: (Poll) -> Unit
-    var setCurrentPoll: StateSetter<Poll?>
+    var setCurrentPoll: (Poll?) -> Unit
     var voteService: VoteService
     var config: Config
 }

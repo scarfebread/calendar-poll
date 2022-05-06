@@ -5,9 +5,8 @@ import client.Client
 import Vote
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import react.StateSetter
 
-class VoteService(private val scope: CoroutineScope, private val client: Client, private val updatePoll: StateSetter<Poll?>) {
+class VoteService(private val scope: CoroutineScope, private val client: Client, private var updatePoll: (Poll?) -> Unit) {
     fun vote(vote: Vote) {
         scope.launch {
             updatePoll(

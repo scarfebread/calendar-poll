@@ -12,6 +12,7 @@ import react.fc
 import react.useEffectOnce
 import react.useState
 import service.VoteService
+import service.setPollCookie
 import styled.css
 import styled.styledDiv as div
 
@@ -23,8 +24,13 @@ val app = fc<Props> {
 
     var polls by useState(emptyList<Poll>())
     var user by useState<User?>(null)
-    val (currentPoll, setCurrentPoll) = useState<Poll?>(null)
+    var currentPoll by useState<Poll?>(null)
     val (loaded, setLoaded) = useState(false)
+
+    fun setCurrentPoll(poll: Poll?) {
+        currentPoll = poll
+        setPollCookie(poll?.id)
+    }
 
     useEffectOnce {
         scope.launch {
@@ -41,7 +47,7 @@ val app = fc<Props> {
 
         child(header) {
             attrs {
-                this.setCurrentPoll = setCurrentPoll
+                this.setCurrentPoll = ::setCurrentPoll
                 this.currentPoll = currentPoll
                 updatePolls = {
                     scope.launch {
@@ -81,8 +87,8 @@ val app = fc<Props> {
                         this.polls = polls
                         this.user = user!!
                         this.currentPoll = currentPoll
-                        this.setCurrentPoll = setCurrentPoll
-                        this.voteService = VoteService(scope, client, setCurrentPoll)
+                        this.setCurrentPoll = ::setCurrentPoll
+                        this.voteService = VoteService(scope, client, ::setCurrentPoll)
                         this.config = config
                     }
                 }

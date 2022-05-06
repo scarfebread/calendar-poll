@@ -11,7 +11,7 @@ import react.fc
 
 external interface YourPollsProps : Props {
     var polls: List<Poll>
-    var setCurrentPoll: StateSetter<Poll?>
+    var setCurrentPoll: (Poll?) -> Unit
     var config: Config
 }
 

@@ -4,7 +4,6 @@ import Poll
 import kotlinx.css.*
 import kotlinx.html.classes
 import react.Props
-import react.StateSetter
 import react.dom.html.ReactHTML.a
 import react.fc
 import styled.css
@@ -14,7 +13,7 @@ import styled.styledH1 as h1
 
 external interface HeaderProps : Props {
     var currentPoll: Poll?
-    var setCurrentPoll: StateSetter<Poll?>
+    var setCurrentPoll: (Poll?) -> Unit
     var updatePolls: () -> Unit
 }
 
