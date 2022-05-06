@@ -58,7 +58,7 @@ class PollRepository(private val collection: CoroutineCollection<Poll>, private 
                         if (vote.id == null) {
                             vote.id = generateString(20)
                         }
-                        this.addVote(vote)
+                        this.addVote(vote, false)
                     }
                 }
             }
