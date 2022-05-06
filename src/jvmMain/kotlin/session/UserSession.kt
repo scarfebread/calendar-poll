@@ -1,6 +1,8 @@
 package session
 
-data class UserSession(val id: String) {
+import io.ktor.auth.*
+
+data class UserSession(val id: String): Principal {
     companion object {
         const val COOKIE_NAME = "user_session"
         private const val CHAR_SET = "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz0123456789"

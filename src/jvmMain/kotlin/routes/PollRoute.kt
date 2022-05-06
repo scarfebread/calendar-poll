@@ -3,6 +3,7 @@ package routes
 import Poll
 import User
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -35,13 +36,10 @@ fun Route.poll(pollRepository: PollRepository, userRepository: UserRepository) {
         call.respond(polls)
     }
 
-    post(Poll.path) {
-        val session = call.sessions.get<UserSession>()
+    authenticate {
+        post(Poll.path) {
+            val session = call.sessions.get<UserSession>()!!
 
-        // TODO add authentication instead of checking session
-        if (session == null) {
-            call.respond(HttpStatusCode.Unauthorized)
-        } else {
             val poll = call.receive<Poll>()
             val user = userRepository.findById(session.id)
 

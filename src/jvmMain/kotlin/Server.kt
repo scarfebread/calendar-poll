@@ -1,6 +1,7 @@
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.routing.*
@@ -17,6 +18,7 @@ import routes.poll
 import routes.user
 import routes.vote
 import session.UserSession
+import session.configureSessionAuthentication
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 
@@ -40,6 +42,9 @@ fun main() {
             cookie<UserSession>(UserSession.COOKIE_NAME) {
                 cookie.maxAgeInSeconds = 60 * 60 * 24 * 365 * 50
             }
+        }
+        install(Authentication) {
+            configureSessionAuthentication()
         }
 
         val mongo = KMongo.createClient(

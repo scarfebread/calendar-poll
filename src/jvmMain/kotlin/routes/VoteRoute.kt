@@ -2,7 +2,7 @@ package routes
 
 import Vote
 import io.ktor.application.*
-import io.ktor.http.*
+import io.ktor.auth.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -13,12 +13,10 @@ import session.UserSession
 import session.UserSession.Companion.generateString
 
 fun Route.vote(pollRepository: PollRepository, userRepository: UserRepository) {
-    post(Vote.path) {
-        val session = call.sessions.get<UserSession>()
+    authenticate {
+        post(Vote.path) {
+            val session = call.sessions.get<UserSession>()!!
 
-        if (session == null) {
-            call.respond(HttpStatusCode.Unauthorized)
-        } else {
             val user = userRepository.findById(session.id)!!
             val vote = call.receive<Vote>()
 
@@ -32,12 +30,10 @@ fun Route.vote(pollRepository: PollRepository, userRepository: UserRepository) {
         }
     }
 
-    delete(Vote.path) {
-        val session = call.sessions.get<UserSession>()
+    authenticate {
+        delete(Vote.path) {
+            val session = call.sessions.get<UserSession>()!!
 
-        if (session == null) {
-            call.respond(HttpStatusCode.Unauthorized)
-        } else {
             val user = userRepository.findById(session.id)!!
             val vote = call.receive<Vote>()
 
