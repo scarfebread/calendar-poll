@@ -11,12 +11,14 @@ import software.amazon.awssdk.services.dynamodb.model.QueryRequest
 
 
 class UserRepository(private val collection: CoroutineCollection<User>, private val dynamo: DynamoDbClient) {
-    suspend fun save(user: User) {
-        collection.updateOne(
-            User::id eq user.id,
-            user,
-            UpdateOptions().upsert(true)
-        )
+    suspend fun save(user: User, updateMongo: Boolean = true) {
+        if (updateMongo) {
+            collection.updateOne(
+                User::id eq user.id,
+                user,
+                UpdateOptions().upsert(true)
+            )
+        }
 
         dynamo.putItem(
             PutItemRequest.builder()
@@ -30,12 +32,14 @@ class UserRepository(private val collection: CoroutineCollection<User>, private 
         )
     }
 
-    suspend fun addPollToUser(user: User, pollId: String) {
-        collection.updateOne(
-            User::id eq user.id,
-            user,
-            UpdateOptions().upsert(true)
-        )
+    suspend fun addPollToUser(user: User, pollId: String, updateMongo: Boolean = true) {
+        if (updateMongo) {
+            collection.updateOne(
+                User::id eq user.id,
+                user,
+                UpdateOptions().upsert(true)
+            )
+        }
 
         dynamo.putItem(
             PutItemRequest.builder()
@@ -49,7 +53,7 @@ class UserRepository(private val collection: CoroutineCollection<User>, private 
     }
 
     suspend fun findById(id: String): User? {
-        var user: User?
+        val user: User?
 
         val getResponse = dynamo.getItem(
             GetItemRequest.builder()
@@ -62,8 +66,16 @@ class UserRepository(private val collection: CoroutineCollection<User>, private 
         ).item()
 
         if (getResponse.isEmpty()) {
-            // TODO update dynamo if not null
-            return collection.findOne(User::id eq id)
+            user = collection.findOne(User::id eq id)
+
+            if (user != null) {
+                this.save(user, false)
+                user.polls.forEach {
+                    this.addPollToUser(user, it, false)
+                }
+            }
+
+            return user
         }
 
         user = User(toString(getResponse["pk"]), toString(getResponse["name"]))

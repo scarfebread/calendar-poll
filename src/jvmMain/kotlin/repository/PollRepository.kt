@@ -6,6 +6,7 @@ import org.bson.Document
 import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.eq
 import service.generateCalendar
+import session.UserSession.Companion.generateString
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest
@@ -13,8 +14,10 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
 
 class PollRepository(private val collection: CoroutineCollection<Poll>, private val dynamo: DynamoDbClient) {
-    suspend fun save(poll: Poll) {
-        collection.insertOne(poll)
+    suspend fun save(poll: Poll, updateMongo: Boolean = true) {
+        if (updateMongo) {
+            collection.insertOne(poll)
+        }
 
         dynamo.putItem(
             PutItemRequest.builder()
@@ -33,7 +36,7 @@ class PollRepository(private val collection: CoroutineCollection<Poll>, private 
     }
 
     suspend fun findById(id: String): Poll? {
-        var poll: Poll?
+        val poll: Poll?
 
         val getResponse = dynamo.getItem(
             GetItemRequest.builder()
@@ -46,8 +49,21 @@ class PollRepository(private val collection: CoroutineCollection<Poll>, private 
         ).item()
 
         if (getResponse.isEmpty()) {
-            // TODO update dynamo if not null
-            return collection.findOne(Poll::id eq id)
+            poll = collection.findOne(Poll::id eq id)
+
+            if (poll != null) {
+                this.save(poll, false)
+                poll.calendar!!.forEach { day ->
+                    day.votes.forEach { vote ->
+                        if (vote.id == null) {
+                            vote.id = generateString(20)
+                        }
+                        this.addVote(vote)
+                    }
+                }
+            }
+
+            return poll
         }
 
         poll = Poll(
@@ -87,27 +103,28 @@ class PollRepository(private val collection: CoroutineCollection<Poll>, private 
         return poll
     }
 
-    suspend fun addVote(vote: Vote) {
-        // TODO nicer way to do this?
-        val query = Document(
-            "\$and", listOf(
-                Poll::id eq vote.pollId,
-                Document("calendar.date", vote.date)
+    suspend fun addVote(vote: Vote, updateMongo: Boolean = true) {
+        if (updateMongo) {
+            val query = Document(
+                "\$and", listOf(
+                    Poll::id eq vote.pollId,
+                    Document("calendar.date", vote.date)
+                )
             )
-        )
 
-        val update = Document(
-            "\$addToSet",
-            Document(
-                "calendar.$.votes",
-                vote
+            val update = Document(
+                "\$addToSet",
+                Document(
+                    "calendar.$.votes",
+                    vote
+                )
             )
-        )
 
-        collection.updateOne(
-            query,
-            update,
-        )
+            collection.updateOne(
+                query,
+                update,
+            )
+        }
 
         dynamo.putItem(
             PutItemRequest.builder()
