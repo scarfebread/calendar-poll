@@ -58,7 +58,7 @@ val app = fc<Props> {
         }
 
         div {
-            if (loaded && user?.name == null) {
+            if (loaded && user?.newUser() == true) {
                 child(createUser) {
                     attrs.createUser = { name ->
                         scope.launch {

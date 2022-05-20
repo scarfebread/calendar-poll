@@ -22,7 +22,7 @@ fun voteId(id: String): AttributeValue {
 }
 
 fun string(value: String?): AttributeValue {
-    return AttributeValue.builder().s(value).build()
+    return AttributeValue.builder().s(value ?: "").build()
 }
 
 fun boolean(value: Boolean): AttributeValue {

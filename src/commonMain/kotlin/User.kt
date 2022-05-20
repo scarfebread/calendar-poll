@@ -10,6 +10,10 @@ data class User(var id: String?, var name: String?, var polls: MutableList<Strin
         polls.remove(poll)
     }
 
+    fun newUser(): Boolean {
+        return listOf("", null).contains(name)
+    }
+
     companion object {
         const val path = "/user"
     }
