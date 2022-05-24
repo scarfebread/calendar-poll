@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 val kotlinVersion = "1.6.10"
 val serializationVersion = "1.3.0"
-val ktorVersion = "2.0.1"
+val ktor_version = "2.0.1"
 val logbackVersion = "1.2.3"
 val reactVersion = "17.0.2-pre.265-kotlin-1.5.31"
 val kmongoVersion = "4.3.0"
@@ -33,9 +33,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
             }
         }
         val commonTest by getting {
@@ -46,15 +44,16 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-serialization:$ktorVersion")
-                implementation("io.ktor:ktor-server-core:$ktorVersion")
-                implementation("io.ktor:ktor-server-netty:$ktorVersion")
-                implementation("io.ktor:ktor-server-sessions:$ktorVersion")
-                implementation("io.ktor:ktor-server-auth:$ktorVersion")
-                implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                implementation("io.ktor:ktor-server-compression:$ktorVersion")
-                implementation("io.ktor:ktor-server-cors:$ktorVersion")
+                implementation("io.ktor:ktor-serialization:$ktor_version")
+                implementation("io.ktor:ktor-server-core:$ktor_version")
+                implementation("io.ktor:ktor-server-netty:$ktor_version")
+                implementation("io.ktor:ktor-server-sessions:$ktor_version")
+                implementation("io.ktor:ktor-server-auth:$ktor_version")
+                implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+                implementation("io.ktor:ktor-server-compression:$ktor_version")
+                implementation("io.ktor:ktor-server-cors:$ktor_version")
+                implementation("io.ktor:ktor-server-websockets:$ktor_version")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
                 implementation("software.amazon.awssdk:dynamodb:$awsVersion")
 
@@ -71,9 +70,11 @@ kotlin {
         }
         val jsMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-js:$ktorVersion")
-                implementation("io.ktor:ktor-client-json:$ktorVersion")
-                implementation("io.ktor:ktor-client-serialization:$ktorVersion")
+                implementation("io.ktor:ktor-client-js:$ktor_version")
+                implementation("io.ktor:ktor-client-json:$ktor_version")
+                implementation("io.ktor:ktor-client-serialization:$ktor_version")
+                implementation("io.ktor:ktor-client-websockets:$ktor_version")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
 
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react:$reactVersion")
                 implementation("org.jetbrains.kotlin-wrappers:kotlin-react-dom:$reactVersion")

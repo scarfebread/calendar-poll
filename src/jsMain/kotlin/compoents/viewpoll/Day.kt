@@ -4,14 +4,11 @@ import User
 import Vote
 import service.VoteService
 import kotlinx.css.*
-import react.Props
+import react.*
 import react.dom.html.ReactHTML.td
 import react.dom.onClick
 import react.dom.onMouseLeave
 import react.dom.onMouseOver
-import react.fc
-import react.useEffectOnce
-import react.useState
 import styled.css
 import styled.styledH3 as h3
 import styled.styledDiv as div
@@ -21,13 +18,16 @@ external interface DayProps : Props {
     var voteService: VoteService
     var pollId: String
     var user: User
+    var numberOfVotes: Int
+    var setNumberOfVotes: StateSetter<Int>
 }
 
 val day = fc<DayProps> { props ->
     val (hover, setHover) = useState(false)
     val (voted, setVoted) = useState(false)
-    val (numberOfVotes, setNumberOfVotes) = useState(0)
     val voteService = props.voteService
+    val numberOfVotes = props.numberOfVotes
+    val setNumberOfVotes = props.setNumberOfVotes
 
     td {
         div {

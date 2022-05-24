@@ -1,8 +1,10 @@
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import io.ktor.server.application.*
+import io.ktor.server.websocket.*
 import io.ktor.server.auth.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.*
 import io.ktor.server.routing.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.engine.*
@@ -12,14 +14,12 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.sessions.*
+import kotlinx.serialization.json.Json
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 import repository.PollRepository
 import repository.UserRepository
-import routes.index
-import routes.poll
-import routes.user
-import routes.vote
+import routes.*
 import session.UserSession
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
@@ -43,7 +43,7 @@ fun main() {
         install(Sessions) {
             // TODO extract from Server
             cookie<UserSession>(UserSession.COOKIE_NAME) {
-                cookie.maxAgeInSeconds = 60 * 60 * 24 * 365 * 50
+                cookie.maxAgeInSeconds = 60 * 60 * 24 * 365 * 50 // TODO compile warning
             }
         }
         install(Authentication) {
@@ -56,6 +56,9 @@ fun main() {
                     call.respond(HttpStatusCode.Unauthorized)
                 }
             }
+        }
+        install(WebSockets) {
+            contentConverter = KotlinxWebsocketSerializationConverter(Json)
         }
 
         val mongo = KMongo.createClient(
@@ -78,6 +81,7 @@ fun main() {
             poll(pollRepository, userRepository)
             user(userRepository)
             vote(pollRepository, userRepository)
+            voteUpdates(pollRepository, userRepository)
         }
     }.start(wait = true)
 }
