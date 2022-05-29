@@ -46,11 +46,11 @@ class Client(config: Config) {
         }.body()
     }
 
-    suspend fun getUser(): User? {
+    suspend fun getUser(): User {
         return try {
             jsonClient.get(host + User.path).body()
         } catch (e: Exception) {
-            null
+            return User(null, null)
         }
     }
 }

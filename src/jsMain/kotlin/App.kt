@@ -23,7 +23,7 @@ val app = fc<Props> {
     val client = Client(config)
 
     var polls by useState(emptyList<Poll>())
-    var user by useState<User?>(null)
+    var user by useState(User(null, null))
     var currentPoll by useState<Poll?>(null)
     val (loaded, setLoaded) = useState(false)
 
@@ -58,7 +58,7 @@ val app = fc<Props> {
         }
 
         div {
-            if (loaded && user?.newUser() == true) {
+            if (loaded && user.newUser()) {
                 child(createUser) {
                     attrs.createUser = { name ->
                         scope.launch {
@@ -85,7 +85,7 @@ val app = fc<Props> {
                             }
                         }
                         this.polls = polls
-                        this.user = user!!
+                        this.user = user
                         this.currentPoll = currentPoll
                         this.setCurrentPoll = ::setCurrentPoll
                         this.voteService = VoteService(scope)
