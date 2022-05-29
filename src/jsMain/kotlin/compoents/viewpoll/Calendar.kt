@@ -82,7 +82,9 @@ val calendar = fc<CalendarProps> { props ->
                 }
             }
 
-            voteService.listen(poll, voteMap)
+            useEffectOnce {
+                voteService.listen(poll, voteMap)
+            }
 
             useEffect {
                 window.onbeforeunload = {

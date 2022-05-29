@@ -80,7 +80,6 @@ fun main() {
             index()
             poll(pollRepository, userRepository)
             user(userRepository)
-            vote(pollRepository, userRepository)
             voteUpdates(pollRepository, userRepository)
         }
     }.start(wait = true)

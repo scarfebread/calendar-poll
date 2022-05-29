@@ -7,7 +7,6 @@ import config.Config
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -20,8 +19,9 @@ class Client(config: Config) {
     }
 
     private val jsonClient = HttpClient {
-        install(ContentNegotiation) { json() }
-        install(WebSockets)
+        install(ContentNegotiation) {
+            json()
+        }
     }
 
     suspend fun getPolls(): List<Poll> {
@@ -52,19 +52,5 @@ class Client(config: Config) {
         } catch (e: Exception) {
             null
         }
-    }
-
-    suspend fun vote(vote: Vote): Poll {
-        return jsonClient.post(host + Vote.path) {
-            contentType(ContentType.Application.Json)
-            setBody(vote)
-        }.body()
-    }
-
-    suspend fun cancelVote(vote: Vote): Poll {
-        return jsonClient.delete(host + Vote.path) {
-            contentType(ContentType.Application.Json)
-            setBody(vote)
-        }.body()
     }
 }

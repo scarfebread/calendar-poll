@@ -88,7 +88,7 @@ val app = fc<Props> {
                         this.user = user!!
                         this.currentPoll = currentPoll
                         this.setCurrentPoll = ::setCurrentPoll
-                        this.voteService = VoteService(scope, client, ::setCurrentPoll)
+                        this.voteService = VoteService(scope)
                         this.config = config
                     }
                 }

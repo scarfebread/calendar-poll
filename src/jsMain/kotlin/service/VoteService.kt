@@ -1,7 +1,6 @@
 package service
 
 import Poll
-import client.Client
 import Vote
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
@@ -11,7 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import react.StateSetter
 
-class VoteService(private val scope: CoroutineScope, private val client: Client, private var updatePoll: (Poll?) -> Unit) {
+class VoteService(private val scope: CoroutineScope) {
     private var listen = false
 
     private val webSocketClient = HttpClient {
@@ -31,7 +30,7 @@ class VoteService(private val scope: CoroutineScope, private val client: Client,
 
     private fun send(vote: Vote) {
         scope.launch {
-            webSocketClient.webSocket(host = "localhost", port = 9090, path = "/poll-updates") {
+            webSocketClient.webSocket(host = "localhost", port = 9090, path = Vote.path) {
                 sendSerialized(vote)
             }
         }
@@ -41,7 +40,7 @@ class VoteService(private val scope: CoroutineScope, private val client: Client,
         scope.launch {
             listen = true
 
-            webSocketClient.webSocket(host = "localhost", port = 9090, path = "/poll-updates") {
+            webSocketClient.webSocket(host = "localhost", port = 9090, path = Vote.path) {
                 while (listen) {
                     val vote = receiveDeserialized<Vote>()
 
