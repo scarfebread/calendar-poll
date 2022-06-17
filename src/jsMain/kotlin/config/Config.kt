@@ -3,7 +3,8 @@ package config
 import kotlinx.browser.window
 
 class Config {
-    val host: String = if (window.location.protocol.contains("https")) "https://scarfebread.co.uk" else "http://localhost:9090"
-    val port: Int = if (window.location.protocol.contains("https")) 80 else 9090
-    val domain: String = if (window.location.protocol.contains("https")) "scarfebread.co.uk" else "localhost"
+    val runningLocally: Boolean = !window.location.protocol.contains("https")
+    val host: String = if (runningLocally) "http://localhost:9090" else "https://scarfebread.co.uk"
+    val port: Int = if (runningLocally) 9090 else 443
+    val domain: String = if (runningLocally) "localhost" else "scarfebread.co.uk"
 }

@@ -5,6 +5,7 @@ import Vote
 import config.Config
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -31,7 +32,14 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
 
     private fun send(vote: Vote) {
         scope.launch {
-            webSocketClient.webSocket(host = config.domain, port = config.port, path = Vote.path) {
+            webSocketClient.webSocket(
+                host = config.domain,
+                port = config.port,
+                path = Vote.path,
+                request = {
+                    url.protocol = if (config.runningLocally) URLProtocol.WS else URLProtocol.WSS
+                }
+            ) {
                 sendSerialized(vote)
             }
         }
@@ -41,7 +49,14 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
         scope.launch {
             listen = true
 
-            webSocketClient.webSocket(host = config.domain, port = config.port, path = Vote.path) {
+            webSocketClient.webSocket(
+                host = config.domain,
+                port = config.port,
+                path = Vote.path,
+                request = {
+                    url.protocol = if (config.runningLocally) URLProtocol.WS else URLProtocol.WSS
+                }
+            ) {
                 while (listen) {
                     val vote = receiveDeserialized<Vote>()
 
