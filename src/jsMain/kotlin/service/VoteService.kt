@@ -45,7 +45,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
         }
     }
 
-    fun listen(poll: Poll, voteMap: Map<String, StateSetter<Int>>) {
+    fun listen(poll: Poll, voteMap: Map<String, Pair<Int, StateSetter<Int>>>) {
         scope.launch {
             listen = true
 
@@ -71,7 +71,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
                                 votes.add(vote)
                             }
 
-                            voteMap[vote.date]!!.invoke(votes.size)
+                            voteMap[vote.date]!!.second(votes.size)
                         }
                     }
                 }

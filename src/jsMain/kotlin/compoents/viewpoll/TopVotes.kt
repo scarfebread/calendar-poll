@@ -1,8 +1,8 @@
 package compoents.viewpoll
 
-import Poll
 import kotlinx.css.*
 import react.Props
+import react.StateSetter
 import react.dom.h2
 import react.dom.tbody
 import react.fc
@@ -14,15 +14,17 @@ import styled.styledTd as td
 import styled.styledTr as tr
 
 external interface TopVotesProps : Props {
-    var poll: Poll
+    var voteMap: MutableMap<String, Pair<Int, StateSetter<Int>>>
 }
 
 val topVotes = fc<TopVotesProps> { props ->
-    val days = props.poll.calendar!!
-        .filter { day -> day.votes.size > 0 }
+    val days = props.voteMap
+        .map { (date, state) -> date to state.first }
+        .filter { (_, votes) -> votes > 0 }
         .sortedWith(
-            compareByDescending { day -> day.votes.size }
+            compareByDescending { (_, votes) -> votes }
         )
+        .toMap()
 
     div {
         css {
@@ -46,15 +48,15 @@ val topVotes = fc<TopVotesProps> { props ->
                     }
                     td { +"Votes" }
                 }
-                days.forEach { day ->
+                days.forEach { (date, votes) ->
                     tr {
                         td {
                             css {
                                 paddingRight = cellPadding
                             }
-                            +formatDate(day.date)
+                            +formatDate(date)
                         }
-                        td { +day.votes.size.toString() }
+                        td { +votes.toString() }
                     }
                 }
             }

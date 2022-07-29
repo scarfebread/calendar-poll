@@ -17,12 +17,14 @@ external interface CalendarProps : Props {
     var poll: Poll
     var user: User
     var voteService: VoteService
+    var voteMap: MutableMap<String, Pair<Int, StateSetter<Int>>>
 }
 
 val calendar = fc<CalendarProps> { props ->
     val poll = props.poll
     val calendar = props.poll.calendar!!
     val voteService = props.voteService
+    val voteMap = props.voteMap
 
     val daysInWeek = if (props.poll.weekends) 7 else 5
 
@@ -48,19 +50,11 @@ val calendar = fc<CalendarProps> { props ->
                 }
             }
 
-            val voteMap = mutableMapOf<String, StateSetter<Int>>()
-
             while (renderCalendar) {
                 tr {
                     val days = calendar.filter { day -> day.week == week }
                     for (dayIndex in 1..daysInWeek) {
                         val dayOfWeek = days.firstOrNull { day -> day.day == dayIndex }
-
-                        val (numberOfVotes, setNumberOfVotes) = useState(0)
-
-                        if (dayOfWeek != null) {
-                            voteMap[dayOfWeek.date] = setNumberOfVotes
-                        }
 
                         child(day) {
                             attrs {
@@ -68,8 +62,7 @@ val calendar = fc<CalendarProps> { props ->
                                 this.pollId = props.poll.id!!
                                 this.voteService = props.voteService
                                 this.user = props.user
-                                this.numberOfVotes = numberOfVotes
-                                this.setNumberOfVotes = setNumberOfVotes
+                                this.voteMap = voteMap
                             }
                         }
 

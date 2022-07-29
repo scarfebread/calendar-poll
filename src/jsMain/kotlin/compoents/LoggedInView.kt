@@ -3,15 +3,12 @@ package compoents
 import Poll
 import User
 import compoents.home.createPoll
-import compoents.viewpoll.topVotes
 import compoents.viewpoll.viewPoll
 import compoents.yourpolls.yourPolls
 import config.Config
 import kotlinx.css.*
+import react.*
 import service.VoteService
-import react.Props
-import react.StateSetter
-import react.fc
 import styled.css
 import styled.styledDiv as div
 
@@ -36,15 +33,9 @@ val loggedInView = fc<LoggedInViewProps> { props ->
 
             child(viewPoll) {
                 attrs {
-                    poll = props.currentPoll!!
-                    voteService = props.voteService
-                    user = props.user
-                }
-            }
-
-            child(topVotes) {
-                attrs {
-                    poll = props.currentPoll!!
+                    this.poll = props.currentPoll!!
+                    this.voteService = props.voteService
+                    this.user = props.user
                 }
             }
         }

@@ -18,16 +18,13 @@ external interface DayProps : Props {
     var voteService: VoteService
     var pollId: String
     var user: User
-    var numberOfVotes: Int
-    var setNumberOfVotes: StateSetter<Int>
+    var voteMap: Map<String, Pair<Int, StateSetter<Int>>>
 }
 
 val day = fc<DayProps> { props ->
     val (hover, setHover) = useState(false)
     val (voted, setVoted) = useState(false)
     val voteService = props.voteService
-    val numberOfVotes = props.numberOfVotes
-    val setNumberOfVotes = props.setNumberOfVotes
 
     td {
         div {
@@ -53,6 +50,10 @@ val day = fc<DayProps> { props ->
                 val day = props.day!!
                 val votes = day.votes
                 val user = props.user
+
+                // TODO horrible
+                val numberOfVotes = props.voteMap[day.date]!!.first
+                val setNumberOfVotes = props.voteMap[day.date]!!.second
 
                 useEffectOnce {
                     setNumberOfVotes(votes.size)
