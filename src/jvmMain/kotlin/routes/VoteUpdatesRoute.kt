@@ -11,6 +11,7 @@ import repository.PollRepository
 import repository.UserRepository
 import session.UserSession
 import java.util.Collections
+import java.util.concurrent.CancellationException
 
 fun Route.voteUpdates(pollRepository: PollRepository, userRepository: UserRepository) {
     val connections = Collections.synchronizedSet<Connection?>(LinkedHashSet())
@@ -42,6 +43,7 @@ fun Route.voteUpdates(pollRepository: PollRepository, userRepository: UserReposi
                         pollRepository.addVote(vote)
                     }
 
+                    // TODO these should be centralised via the DB
                     connections.forEach {
                         it.session.send(
                             // TODO better way to do this?
@@ -49,8 +51,10 @@ fun Route.voteUpdates(pollRepository: PollRepository, userRepository: UserReposi
                         )
                     }
                 }
-            } catch (e: Exception) {
+            } catch (cancellationException: CancellationException) {
                 // exceptions will be thrown when channels are closed, however this is expected
+            } catch (e: Exception) {
+                println(e)
             } finally {
                 connections -= thisConnection
             }

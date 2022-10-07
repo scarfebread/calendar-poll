@@ -1,25 +1,14 @@
 package repository
 
 import User
-import com.mongodb.client.model.UpdateOptions
-import org.litote.kmongo.coroutine.CoroutineCollection
-import org.litote.kmongo.eq
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
 
 
-class UserRepository(private val collection: CoroutineCollection<User>, private val dynamo: DynamoDbClient) {
-    suspend fun save(user: User, updateMongo: Boolean = true) {
-        if (updateMongo) {
-            collection.updateOne(
-                User::id eq user.id,
-                user,
-                UpdateOptions().upsert(true)
-            )
-        }
-
+class UserRepository(private val dynamo: DynamoDbClient) {
+    fun save(user: User) {
         dynamo.putItem(
             PutItemRequest.builder()
                 .tableName(TABLE)
@@ -32,15 +21,7 @@ class UserRepository(private val collection: CoroutineCollection<User>, private 
         )
     }
 
-    suspend fun addPollToUser(user: User, pollId: String, updateMongo: Boolean = true) {
-        if (updateMongo) {
-            collection.updateOne(
-                User::id eq user.id,
-                user,
-                UpdateOptions().upsert(true)
-            )
-        }
-
+    fun addPollToUser(user: User, pollId: String) {
         dynamo.putItem(
             PutItemRequest.builder()
                 .tableName(TABLE)
@@ -52,9 +33,7 @@ class UserRepository(private val collection: CoroutineCollection<User>, private 
         )
     }
 
-    suspend fun findById(id: String): User? {
-        val user: User?
-
+    fun findById(id: String): User? {
         val getResponse = dynamo.getItem(
             GetItemRequest.builder()
                 .key(hashMapOf(
@@ -65,20 +44,7 @@ class UserRepository(private val collection: CoroutineCollection<User>, private 
                 .build()
         ).item()
 
-        if (getResponse.isEmpty()) {
-            user = collection.findOne(User::id eq id)
-
-            if (user != null) {
-                this.save(user, false)
-                user.polls.forEach {
-                    this.addPollToUser(user, it, false)
-                }
-            }
-
-            return user
-        }
-
-        user = User(toString(getResponse["pk"]), toString(getResponse["name"]))
+        val user = User(toString(getResponse["pk"]), toString(getResponse["name"]))
 
         // TODO break out the query and get
         val queryResponse = dynamo.query(
