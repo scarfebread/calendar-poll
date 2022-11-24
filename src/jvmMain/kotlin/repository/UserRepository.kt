@@ -44,6 +44,10 @@ class UserRepository(private val dynamo: DynamoDbClient) {
                 .build()
         ).item()
 
+        if (getResponse.isEmpty()) {
+            return null
+        }
+
         val user = User(toString(getResponse["pk"]), toString(getResponse["name"]))
 
         // TODO break out the query and get
