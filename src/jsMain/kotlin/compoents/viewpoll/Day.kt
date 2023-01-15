@@ -69,11 +69,17 @@ val day = fc<DayProps> { props ->
                     if (voted) {
                         setVoted(false)
                         setNumberOfVotes(numberOfVotes - 1)
-                        voteService.cancel(votes.first{ it.sessionId == user.id })
+
+                        val vote = votes.first{ it.sessionId == user.id }
+                        voteService.cancel(vote) // TODO only send one request
+                        voteService.cancelHttp(vote)
                     } else {
                         setVoted(true)
                         setNumberOfVotes(numberOfVotes + 1)
-                        voteService.vote(Vote(props.pollId, day.date))
+
+                        val vote = Vote(props.pollId, day.date)
+                        voteService.vote(vote) // TODO only send one request
+                        voteService.sendHttp(vote)
                     }
                 }
 

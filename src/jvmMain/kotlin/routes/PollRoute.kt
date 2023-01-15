@@ -2,6 +2,7 @@ package routes
 
 import Poll
 import User
+import event.KafkaEventService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -17,7 +18,7 @@ import service.validateStart
 import session.UserSession
 import session.UserSession.Companion.generateString
 
-fun Route.poll(pollRepository: PollRepository, userRepository: UserRepository) {
+fun Route.poll(pollRepository: PollRepository, userRepository: UserRepository, kafkaEventService: KafkaEventService) {
     get(Poll.path) {
         val session = call.sessions.get<UserSession>()!!
         val user = userRepository.findById(session.id)
@@ -47,7 +48,10 @@ fun Route.poll(pollRepository: PollRepository, userRepository: UserRepository) {
             poll.start = validateStart(poll.start, poll.weekends)
             poll.end = validateEnd(poll.end, poll.weekends)
             poll.calendar = generateCalendar(poll.start, poll.end, poll.weekends)
+            poll.votesStoredInKafka = true
+
             pollRepository.save(poll)
+            kafkaEventService.createTopic(poll.id!!)
 
             if (user != null) {
                 user.polls.add(poll.id!!)

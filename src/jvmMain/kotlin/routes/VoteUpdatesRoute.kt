@@ -17,7 +17,7 @@ fun Route.voteUpdates(pollRepository: PollRepository, userRepository: UserReposi
     val connections = Collections.synchronizedSet<Connection?>(LinkedHashSet())
 
     authenticate {
-        webSocket(Vote.path) {
+        webSocket(Vote.path_ws) {
             val thisConnection = Connection(this)
             connections += thisConnection
 

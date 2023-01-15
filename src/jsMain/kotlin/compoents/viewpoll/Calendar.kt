@@ -76,12 +76,17 @@ val calendar = fc<CalendarProps> { props ->
             }
 
             useEffectOnce {
-                voteService.listen(poll, voteMap)
+                if (poll.votesStoredInKafka == true) {
+                    voteService.getVotes(poll, voteMap)
+                } else {
+                    voteService.listen(poll, voteMap)
+                }
             }
 
             useEffect {
                 window.onbeforeunload = {
                     voteService.stop()
+                    voteService.eventSource?.close()
                     null
                 }
             }

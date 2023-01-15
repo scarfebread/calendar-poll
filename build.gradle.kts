@@ -19,6 +19,10 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("http://packages.confluent.io/maven/")
+        isAllowInsecureProtocol = true
+    }
 }
 
 kotlin {
@@ -57,6 +61,11 @@ kotlin {
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
                 implementation("software.amazon.awssdk:dynamodb:$awsVersion")
                 implementation("software.amazon.awssdk:sqs:$awsVersion")
+
+                implementation("org.apache.kafka:kafka-clients:2.3.0")
+                implementation("io.confluent:kafka-json-serializer:7.3.1")
+
+                implementation("org.everit.json:org.everit.json.schema:1.5.1")
             }
         }
         val jvmTest by getting {

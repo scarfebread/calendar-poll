@@ -23,6 +23,7 @@ class PollRepository(private val dynamo: DynamoDbClient, private val eventApi: E
                     "end" to string(poll.end),
                     "weekends" to boolean(poll.weekends),
                     "createdBy" to string(poll.createdBy),
+                    "votesStoredInKafka" to boolean(poll.votesStoredInKafka!!)
                 ))
                 .build()
         )
@@ -47,28 +48,32 @@ class PollRepository(private val dynamo: DynamoDbClient, private val eventApi: E
         ).apply {
             this.id = toString(getResponse["pk"])!!
             this.createdBy = toString(getResponse["createdBy"])!!
+            this.votesStoredInKafka = toBoolean(getResponse["votesStoredInKafka"])
         }
 
-        // TODO break out the query and get
-        val queryResponse = dynamo.query(
-            QueryRequest.builder()
-                .tableName(TABLE)
-                .keyConditionExpression("pk = :pollId and begins_with(sk, :votePrefix)")
-                .expressionAttributeValues(hashMapOf(
-                    ":pollId" to pollId(poll.id!!),
-                    ":votePrefix" to string("vote-")
-                ))
-                .build()
-        )
+        var votes = listOf<Vote>()
 
-        val votes = queryResponse.items().map {
-            Vote(
-                toString(it["pk"])!!,
-                toString(it["date"])!!,
-                toString(it["name"]),
-                toString(it["sessionId"]),
-                toString(it["sk"]),
+        if (poll.votesStoredInKafka == false) {
+            val queryResponse = dynamo.query(
+                QueryRequest.builder()
+                    .tableName(TABLE)
+                    .keyConditionExpression("pk = :pollId and begins_with(sk, :votePrefix)")
+                    .expressionAttributeValues(hashMapOf(
+                        ":pollId" to pollId(poll.id!!),
+                        ":votePrefix" to string("vote-")
+                    ))
+                    .build()
             )
+
+            votes = queryResponse.items().map {
+                Vote(
+                    toString(it["pk"])!!,
+                    toString(it["date"])!!,
+                    toString(it["name"]),
+                    toString(it["sessionId"]),
+                    toString(it["sk"]),
+                )
+            }
         }
 
         poll.calendar = generateCalendar(poll.start, poll.end, poll.weekends, votes)
@@ -77,8 +82,6 @@ class PollRepository(private val dynamo: DynamoDbClient, private val eventApi: E
     }
 
     fun addVote(vote: Vote) {
-        eventApi.create(vote)
-
         dynamo.putItem(
             PutItemRequest.builder()
                 .tableName(TABLE)
