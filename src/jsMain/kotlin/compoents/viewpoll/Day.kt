@@ -57,7 +57,9 @@ val day = fc<DayProps> { props ->
 
                 useEffectOnce {
                     setNumberOfVotes(votes.size)
+                }
 
+                useEffect {
                     if (day.votes.firstOrNull { it.sessionId == user.id } != null)  {
                         setVoted(true)
                     }
