@@ -1,5 +1,6 @@
 package compoents.viewpoll
 
+import Vote
 import kotlinx.css.*
 import react.Props
 import react.StateSetter
@@ -14,12 +15,12 @@ import styled.styledTd as td
 import styled.styledTr as tr
 
 external interface TopVotesProps : Props {
-    var voteMap: MutableMap<String, Pair<Int, StateSetter<Int>>>
+    var voteMap: MutableMap<String, Pair<List<Vote>, StateSetter<List<Vote>>>>
 }
 
 val topVotes = fc<TopVotesProps> { props ->
     val days = props.voteMap
-        .map { (date, state) -> date to state.first }
+        .map { (date, state) -> date to state.first.size }
         .filter { (_, votes) -> votes > 0 }
         .sortedWith(
             compareByDescending { (_, votes) -> votes }

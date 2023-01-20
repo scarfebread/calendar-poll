@@ -2,6 +2,7 @@ package compoents.viewpoll
 
 import Poll
 import User
+import Vote
 import kotlinx.browser.window
 import service.VoteService
 import kotlinx.css.TextAlign
@@ -17,7 +18,7 @@ external interface CalendarProps : Props {
     var poll: Poll
     var user: User
     var voteService: VoteService
-    var voteMap: MutableMap<String, Pair<Int, StateSetter<Int>>>
+    var voteMap: MutableMap<String, Pair<List<Vote>, StateSetter<List<Vote>>>>
 }
 
 val calendar = fc<CalendarProps> { props ->
@@ -30,6 +31,22 @@ val calendar = fc<CalendarProps> { props ->
 
     var week = 1
     var renderCalendar = true
+
+    useEffectOnce {
+        if (poll.votesStoredInKafka == true) {
+            voteService.getVotes(poll, voteMap)
+        } else {
+            voteService.listen(poll, voteMap)
+        }
+    }
+
+    useEffect {
+        window.onbeforeunload = {
+            voteService.stop()
+            voteService.close()
+            null
+        }
+    }
 
     table {
         tbody {
@@ -63,6 +80,7 @@ val calendar = fc<CalendarProps> { props ->
                                 this.voteService = props.voteService
                                 this.user = props.user
                                 this.voteMap = voteMap
+                                this.votesStoredInKafka = poll.votesStoredInKafka == true
                             }
                         }
 
@@ -72,22 +90,6 @@ val calendar = fc<CalendarProps> { props ->
                         }
                     }
                     week++
-                }
-            }
-
-            useEffectOnce {
-                if (poll.votesStoredInKafka == true) {
-                    voteService.getVotes(poll, voteMap)
-                } else {
-                    voteService.listen(poll, voteMap)
-                }
-            }
-
-            useEffect {
-                window.onbeforeunload = {
-                    voteService.stop()
-                    voteService.eventSource?.close()
-                    null
                 }
             }
         }

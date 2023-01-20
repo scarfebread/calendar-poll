@@ -2,6 +2,7 @@ package compoents.viewpoll
 
 import Poll
 import User
+import Vote
 import service.VoteService
 import kotlinx.css.*
 import react.Props
@@ -19,7 +20,7 @@ external interface ViewPollProps : Props {
 }
 
 val viewPoll = fc<ViewPollProps> { props ->
-    val voteMap = mutableMapOf<String, Pair<Int, StateSetter<Int>>>()
+    val voteMap = mutableMapOf<String, Pair<List<Vote>, StateSetter<List<Vote>>>>()
     val poll = props.poll
 
     val daysInWeek = if (poll.weekends) 7 else 5
@@ -34,8 +35,8 @@ val viewPoll = fc<ViewPollProps> { props ->
             val dayOfWeek = days.firstOrNull { day -> day.day == dayIndex }
 
             if (dayOfWeek != null) {
-                val (numberOfVotes, setNumberOfVotes) = useState(0)
-                voteMap[dayOfWeek.date] = Pair(numberOfVotes, setNumberOfVotes)
+                val (votes, setVotes) = useState(listOf<Vote>())
+                voteMap[dayOfWeek.date] = Pair(votes, setVotes)
             }
 
             if (dayOfWeek != null && dayOfWeek.date == poll.end) {

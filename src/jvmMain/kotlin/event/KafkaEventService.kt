@@ -18,6 +18,13 @@ class KafkaEventService(private val producer: KafkaProducer<String, Vote>, priva
         }
     }
 
+    fun deleteVote(vote: Vote) {
+        val topic = "calendar_votes_${vote.pollId}"
+        producer.send(ProducerRecord(topic, vote.id, vote)) { _: RecordMetadata, e: Exception? ->
+            e?.printStackTrace()
+        }
+    }
+
     fun createTopic(pollId: String) {
         val topic = "calendar_votes_${pollId}"
         val newTopic = NewTopic(topic, PARTITIONS, REPLICATION_FACTOR)

@@ -12,7 +12,6 @@ import io.ktor.serialization.kotlinx.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.Json.Default.decodeFromString
 import org.w3c.dom.EventSource
@@ -72,7 +71,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
         }
     }
 
-    fun listen(poll: Poll, voteMap: Map<String, Pair<Int, StateSetter<Int>>>) {
+    fun listen(poll: Poll, voteMap: Map<String, Pair<List<Vote>, StateSetter<List<Vote>>>>) {
         scope.launch {
             listen = true
 
@@ -89,6 +88,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
 
                     if (vote.pollId == poll.id) {
                         poll.calendar!!.first { it.date == vote.date }.apply {
+                            println(vote)
                             if (vote.delete) {
                                 val index = votes.indexOfFirst { it.name == vote.name }
                                 if (index >= 0) {
@@ -98,7 +98,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
                                 votes.add(vote)
                             }
 
-                            voteMap[vote.date]!!.second(votes.size)
+                            voteMap[vote.date]!!.second(votes)
                         }
                     }
                 }
@@ -106,7 +106,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
         }
     }
 
-    fun getVotes(poll: Poll, voteMap: Map<String, Pair<Int, StateSetter<Int>>>) {
+    fun getVotes(poll: Poll, voteMap: Map<String, Pair<List<Vote>, StateSetter<List<Vote>>>>) {
         val voteService = this
 
         scope.launch {
@@ -128,7 +128,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
                             votes.add(vote)
                         }
 
-                        voteMap[vote.date]!!.second(votes.size)
+                        voteMap[vote.date]!!.second(votes)
                     }
                 }
             }
@@ -138,7 +138,9 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
     fun stop() {
         listen = false
         webSocketClient.close()
+    }
 
-        // TODO stop the SSE
+    fun close() {
+        eventSource?.close()
     }
 }
