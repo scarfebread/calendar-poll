@@ -1,4 +1,3 @@
-import event.EventApi
 import event.KafkaEventService
 import event.kafkaConfig
 import io.ktor.http.*
@@ -15,6 +14,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.serialization.json.Json
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -24,8 +25,6 @@ import routes.*
 import session.UserSession
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
-import software.amazon.awssdk.services.sqs.SqsClient
-
 
 fun main() {
     embeddedServer(Netty, 9090, module = Application::calendarModule).start(wait = true)
@@ -70,18 +69,13 @@ fun Application.calendarModule() {
         .region(Region.EU_WEST_1)
         .build()
 
-    val sqs = SqsClient.builder()
-        .region(Region.EU_WEST_1)
-        .build()
-    val eventApi = EventApi(sqs)
-
     val kafkaEventService = KafkaEventService(
         KafkaProducer<String, Vote>(kafkaConfig),
         AdminClient.create(kafkaConfig)
     )
 
     val userRepository = UserRepository(dynamo)
-    val pollRepository = PollRepository(dynamo, eventApi)
+    val pollRepository = PollRepository(dynamo)
 
     routing {
         index()

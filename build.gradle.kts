@@ -60,12 +60,18 @@ kotlin {
                 implementation("io.ktor:ktor-server-websockets:$ktorVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
                 implementation("software.amazon.awssdk:dynamodb:$awsVersion")
-                implementation("software.amazon.awssdk:sqs:$awsVersion")
 
                 implementation("org.apache.kafka:kafka-clients:2.3.0")
                 implementation("io.confluent:kafka-json-serializer:7.3.1")
 
-                implementation("org.everit.json:org.everit.json.schema:1.5.1")
+                implementation("org.everit.json:org.everit.json.schema:1.5.1") // TODO what's this?
+
+                // TODO might not need all of these
+                implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.1")
+                implementation("io.projectreactor.kafka:reactor-kafka:1.3.15")
+                implementation("org.jetbrains.kotlin:kotlin-reflect")
+                implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+                runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
             }
         }
         val jvmTest by getting {

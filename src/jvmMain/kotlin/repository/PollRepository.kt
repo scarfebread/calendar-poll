@@ -2,7 +2,6 @@ package repository
 
 import Poll
 import Vote
-import event.EventApi
 import service.generateCalendar
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest
@@ -10,7 +9,7 @@ import software.amazon.awssdk.services.dynamodb.model.GetItemRequest
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
 
-class PollRepository(private val dynamo: DynamoDbClient, private val eventApi: EventApi) {
+class PollRepository(private val dynamo: DynamoDbClient) {
     fun save(poll: Poll) {
         dynamo.putItem(
             PutItemRequest.builder()
