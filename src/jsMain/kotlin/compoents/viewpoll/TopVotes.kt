@@ -15,12 +15,12 @@ import styled.styledTd as td
 import styled.styledTr as tr
 
 external interface TopVotesProps : Props {
-    var voteMap: MutableMap<String, Pair<List<Vote>, StateSetter<List<Vote>>>>
+    var voteMap: Map<String, Pair<Int, StateSetter<Int>>>
 }
 
 val topVotes = fc<TopVotesProps> { props ->
     val days = props.voteMap
-        .map { (date, state) -> date to state.first.size }
+        .map { (date, state) -> date to state.first }
         .filter { (_, votes) -> votes > 0 }
         .sortedWith(
             compareByDescending { (_, votes) -> votes }

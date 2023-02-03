@@ -18,7 +18,7 @@ external interface CalendarProps : Props {
     var poll: Poll
     var user: User
     var voteService: VoteService
-    var voteMap: MutableMap<String, Pair<List<Vote>, StateSetter<List<Vote>>>>
+    var voteMap: MutableMap<String, Pair<Int, StateSetter<Int>>>
 }
 
 val calendar = fc<CalendarProps> { props ->

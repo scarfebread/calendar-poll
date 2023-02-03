@@ -19,7 +19,7 @@ external interface DayProps : Props {
     var voteService: VoteService
     var poll: Poll
     var user: User
-    var voteMap: Map<String, Pair<List<Vote>, StateSetter<List<Vote>>>>
+    var voteMap: Map<String, Pair<Int, StateSetter<Int>>>
     var votesStoredInKafka: Boolean
 }
 
@@ -55,17 +55,17 @@ val day = fc<DayProps> { props ->
                 val poll = props.poll
 
                 // TODO horrible
-                val voteState = props.voteMap[day.date]!!.first
-                val setVoteState = props.voteMap[day.date]!!.second
+                val numberOfVotes = props.voteMap[day.date]!!.first
+                val setNumberOfVotes = props.voteMap[day.date]!!.second
 
                 useEffectOnce {
                     if (!votesStoredInKafka) {
-                        setVoteState(day.votes)
+                        setNumberOfVotes(day.votes.size)
                     }
                 }
 
                 useEffect {
-                    if (voteState.firstOrNull { it.sessionId == user.id } != null) {
+                    if (day.votes.firstOrNull { it.sessionId == user.id } != null) {
                         setVoted(true)
                     } else {
                         setVoted(false)
@@ -76,14 +76,12 @@ val day = fc<DayProps> { props ->
                 attrs.onMouseLeave = { setHover(false) }
                 attrs.onClick = {
                     if (voted) {
-                        val updatedVotes = voteState.toMutableList()
-                        val vote = updatedVotes.first {
+                        val vote = day.votes.first {
                             it.sessionId == user.id
                         }
 
-                        updatedVotes.remove(vote)
                         day.votes.remove(vote)
-                        setVoteState(updatedVotes)
+                        setNumberOfVotes(day.votes.size)
                         setVoted(false)
 
                         if (votesStoredInKafka) {
@@ -92,18 +90,15 @@ val day = fc<DayProps> { props ->
                             voteService.cancel(vote)
                         }
 
-                        println("cancelled vote - ${vote.date} ${voteState.size}")
+                        println("cancelled vote - ${vote.date} ${numberOfVotes}")
                     } else {
                         val newVote = Vote(poll.id!!, day.date)
                         newVote.sessionId = user.id
                         newVote.name = user.name
 
-                        val updatedVotes = voteState.toMutableList()
-
-                        updatedVotes.add(newVote)
                         day.votes.add(newVote)
 
-                        setVoteState(updatedVotes)
+                        setNumberOfVotes(day.votes.size)
                         setVoted(true)
 
                         if (votesStoredInKafka) {
@@ -112,7 +107,7 @@ val day = fc<DayProps> { props ->
                             voteService.vote(newVote)
                         }
 
-                        println("added vote - ${newVote.date} ${voteState.size}")
+                        println("added vote - ${newVote.date} ${numberOfVotes}")
                     }
                 }
 
@@ -122,7 +117,7 @@ val day = fc<DayProps> { props ->
                 }
                 h3 {
                     css { marginTop = LinearDimension("0") }
-                    +voteState.size.toString()
+                    +numberOfVotes.toString()
                 }
             }
         }

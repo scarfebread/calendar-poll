@@ -20,7 +20,7 @@ external interface ViewPollProps : Props {
 }
 
 val viewPoll = fc<ViewPollProps> { props ->
-    val voteMap = mutableMapOf<String, Pair<List<Vote>, StateSetter<List<Vote>>>>()
+    val voteMap = mutableMapOf<String, Pair<Int, StateSetter<Int>>>()
     val poll = props.poll
 
     val daysInWeek = if (poll.weekends) 7 else 5
@@ -35,7 +35,7 @@ val viewPoll = fc<ViewPollProps> { props ->
             val dayOfWeek = days.firstOrNull { day -> day.day == dayIndex }
 
             if (dayOfWeek != null) {
-                val (votes, setVotes) = useState(listOf<Vote>())
+                val (votes, setVotes) = useState(0)
                 voteMap[dayOfWeek.date] = Pair(votes, setVotes)
             }
 

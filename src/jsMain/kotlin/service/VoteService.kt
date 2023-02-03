@@ -12,7 +12,6 @@ import io.ktor.serialization.kotlinx.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.html.P
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.Json.Default.decodeFromString
 import org.w3c.dom.EventSource
@@ -72,7 +71,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
         }
     }
 
-    fun listen(poll: Poll, voteMap: Map<String, Pair<List<Vote>, StateSetter<List<Vote>>>>) {
+    fun listen(poll: Poll, voteMap: Map<String, Pair<Int, StateSetter<Int>>>) {
         scope.launch {
             listen = true
 
@@ -95,7 +94,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
         }
     }
 
-    fun getVotes(poll: Poll, voteMap: Map<String, Pair<List<Vote>, StateSetter<List<Vote>>>>) {
+    fun getVotes(poll: Poll, voteMap: Map<String, Pair<Int, StateSetter<Int>>>) {
         val voteService = this
 
         scope.launch {
@@ -115,7 +114,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
         }
     }
 
-    private fun processVoteEvent(poll: Poll, voteMap: Map<String, Pair<List<Vote>, StateSetter<List<Vote>>>>, vote: Vote) {
+    private fun processVoteEvent(poll: Poll, voteMap: Map<String, Pair<Int, StateSetter<Int>>>, vote: Vote) {
         poll.calendar!!.first { it.date == vote.date }.apply {
             println("received event - ${vote.name} ${vote.date} ${vote.name}")
 
@@ -132,7 +131,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
             }
 
             println("received event - ${vote.date} ${votes.size}")
-            voteMap[vote.date]!!.second(votes)
+            voteMap[vote.date]!!.second(votes.size)
         }
     }
 
