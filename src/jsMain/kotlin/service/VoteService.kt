@@ -12,6 +12,7 @@ import io.ktor.serialization.kotlinx.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.html.P
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.Json.Default.decodeFromString
 import org.w3c.dom.EventSource
@@ -87,19 +88,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
                     val vote = receiveDeserialized<Vote>()
 
                     if (vote.pollId == poll.id) {
-                        poll.calendar!!.first { it.date == vote.date }.apply {
-                            println(vote)
-                            if (vote.delete) {
-                                val index = votes.indexOfFirst { it.name == vote.name }
-                                if (index >= 0) {
-                                    votes.removeAt(index)
-                                }
-                            } else if (!votes.contains(vote)) {
-                                votes.add(vote)
-                            }
-
-                            voteMap[vote.date]!!.second(votes)
-                        }
+                        processVoteEvent(poll, voteMap, vote)
                     }
                 }
             }
@@ -116,22 +105,39 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
 
             eventSource.onmessage = { event ->
                 decodeFromString(Vote.serializer(), event.data.toString()).run {
-                    val vote = Vote(pollId, this.date, this.name, this.sessionId, this.id, this.delete)
-
-                    poll.calendar!!.first { it.date == vote.date }.apply {
-                        if (vote.delete) {
-                            val index = votes.indexOfFirst { it.name == vote.name }
-                            if (index >= 0) {
-                                votes.removeAt(index)
-                            }
-                        } else if (votes.firstOrNull { it.date == vote.date && it.name == vote.name } == null) {
-                            votes.add(vote)
-                        }
-
-                        voteMap[vote.date]!!.second(votes)
-                    }
+                    processVoteEvent(
+                        poll,
+                        voteMap,
+                        Vote(pollId, this.date, this.name, this.sessionId, this.id, this.delete)
+                    )
                 }
             }
+        }
+    }
+
+    private fun processVoteEvent(poll: Poll, voteMap: Map<String, Pair<List<Vote>, StateSetter<List<Vote>>>>, vote: Vote) {
+        poll.calendar!!.first { it.date == vote.date }.apply {
+            println("received event - ${vote.name} ${vote.date} ${vote.name}")
+
+            val votes = voteMap[vote.date]!!.first.toMutableList()
+
+            println(voteMap[vote.date]!!.first)
+            println(votes)
+
+            if (vote.delete) {
+                val index = votes.indexOfFirst { it.name == vote.name }
+                if (index >= 0) {
+                    votes.removeAt(index)
+                }
+            } else if (votes.firstOrNull { it.date == vote.date && it.name == vote.name } == null) {
+                println("received event - adding vote")
+                votes.add(vote)
+            } else {
+                println("not including vote ${vote.date} ${vote.name}")
+            }
+
+            println("received event - ${vote.date} ${votes.size}")
+            voteMap[vote.date]!!.second(votes)
         }
     }
 
