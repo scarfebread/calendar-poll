@@ -1,5 +1,5 @@
 import event.KafkaEventService
-import event.kafkaConfig
+import event.kafkaProducerConfig
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
 import io.ktor.serialization.kotlinx.json.*
@@ -68,8 +68,8 @@ fun Application.calendarModule() {
         .build()
 
     val kafkaEventService = KafkaEventService(
-        KafkaProducer<String, Vote>(kafkaConfig),
-        AdminClient.create(kafkaConfig)
+        KafkaProducer<String, Vote>(kafkaProducerConfig),
+        AdminClient.create(kafkaProducerConfig)
     )
 
     val userRepository = UserRepository(dynamo)

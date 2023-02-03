@@ -43,10 +43,8 @@ fun Route.voteUpdates(pollRepository: PollRepository, userRepository: UserReposi
                         pollRepository.addVote(vote)
                     }
 
-                    // TODO these should be centralised via the DB
                     connections.forEach {
                         it.session.send(
-                            // TODO better way to do this?
                             Json.encodeToString(Vote.serializer(), vote)
                         )
                     }

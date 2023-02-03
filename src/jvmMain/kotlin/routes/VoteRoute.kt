@@ -2,6 +2,7 @@ package routes
 
 import Vote
 import event.KafkaEventService
+import event.kafkaConsumerConfig
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -16,9 +17,7 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.broadcast
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.withContext
-import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.serialization.StringDeserializer
 import reactor.kafka.receiver.KafkaReceiver
 import reactor.kafka.receiver.ReceiverOptions
@@ -47,22 +46,17 @@ fun Route.vote(userRepository: UserRepository, kafkaEventService: KafkaEventServ
             val pollId = call.parameters["pollId"]!!
 
             val clientId = "vote-consumer-" + pollId + "-" + UUID.randomUUID()
-            val kafkaConfig = HashMap<String, Any>().apply {
-                this[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = "pkc-e8mp5.eu-west-1.aws.confluent.cloud:9092"
+
+            val config = kafkaConsumerConfig
+            config.apply {
                 this[ConsumerConfig.CLIENT_ID_CONFIG] = clientId
                 this[ConsumerConfig.GROUP_ID_CONFIG] = clientId
-                this[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
                 this[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
-                this[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
-
-                this[CommonClientConfigs.SECURITY_PROTOCOL_CONFIG] = "SASL_SSL"
-
-                this[SaslConfigs.SASL_JAAS_CONFIG] = "org.apache.kafka.common.security.plain.PlainLoginModule required username='TNJVLXNAIZZ5RWDC' password='rdpAlMTV1BrXFK5fxBimUpIY2hDz7OUdCkINrqvKTYYyU4vtSttyvvvUgS5RRxY/';"
-                this[SaslConfigs.SASL_MECHANISM] = "PLAIN"
+                this[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
             }
 
-            val receiverOptions = ReceiverOptions.create<Int, String>(kafkaConfig)
-            val options: ReceiverOptions<Int, String> = receiverOptions.subscription(Collections.singleton("calendar_votes_${pollId}"))
+            val receiverOptions = ReceiverOptions.create<Int, String>(config)
+            val options = receiverOptions.subscription(Collections.singleton("calendar_votes_${pollId}"))
 
             val kafkaFlux = KafkaReceiver.create(options).receive()
 
