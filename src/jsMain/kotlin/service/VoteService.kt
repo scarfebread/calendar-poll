@@ -119,11 +119,6 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
         poll.calendar!!.first { it.date == vote.date }.apply {
             println("received event - ${vote.name} ${vote.date} ${vote.name}")
 
-            val votes = voteMap[vote.date]!!.first.toMutableList()
-
-            println(voteMap[vote.date]!!.first)
-            println(votes)
-
             if (vote.delete) {
                 val index = votes.indexOfFirst { it.name == vote.name }
                 if (index >= 0) {

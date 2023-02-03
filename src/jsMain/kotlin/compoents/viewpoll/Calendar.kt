@@ -76,7 +76,7 @@ val calendar = fc<CalendarProps> { props ->
                         child(day) {
                             attrs {
                                 this.day = dayOfWeek
-                                this.pollId = props.poll.id!!
+                                this.poll = props.poll
                                 this.voteService = props.voteService
                                 this.user = props.user
                                 this.voteMap = voteMap

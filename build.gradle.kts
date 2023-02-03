@@ -5,7 +5,6 @@ val serializationVersion = "1.3.0"
 val ktorVersion = "2.0.1"
 val logbackVersion = "1.2.3"
 val reactVersion = "17.0.2-pre.265-kotlin-1.5.31"
-val kmongoVersion = "4.3.0"
 val awsVersion = "2.17.175"
 
 plugins {

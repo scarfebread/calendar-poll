@@ -1,5 +1,6 @@
 package compoents.viewpoll
 
+import Poll
 import User
 import Vote
 import service.VoteService
@@ -16,7 +17,7 @@ import styled.styledDiv as div
 external interface DayProps : Props {
     var day: Calendar.Day?
     var voteService: VoteService
-    var pollId: String
+    var poll: Poll
     var user: User
     var voteMap: Map<String, Pair<List<Vote>, StateSetter<List<Vote>>>>
     var votesStoredInKafka: Boolean
@@ -50,8 +51,8 @@ val day = fc<DayProps> { props ->
 
             if (props.day != null) {
                 val day = props.day!!
-                val votes = day.votes
                 val user = props.user
+                val poll = props.poll
 
                 // TODO horrible
                 val voteState = props.voteMap[day.date]!!.first
@@ -59,13 +60,15 @@ val day = fc<DayProps> { props ->
 
                 useEffectOnce {
                     if (!votesStoredInKafka) {
-                        setVoteState(votes)
+                        setVoteState(day.votes)
                     }
                 }
 
                 useEffect {
-                    if (voteState.firstOrNull { it.sessionId == user.id } != null)  {
+                    if (voteState.firstOrNull { it.sessionId == user.id } != null) {
                         setVoted(true)
+                    } else {
+                        setVoted(false)
                     }
                 }
 
@@ -74,42 +77,42 @@ val day = fc<DayProps> { props ->
                 attrs.onClick = {
                     if (voted) {
                         val updatedVotes = voteState.toMutableList()
-                        updatedVotes.remove(
-                            updatedVotes.first {
-                                it.sessionId == user.id
-                            }
-                        )
+                        val vote = updatedVotes.first {
+                            it.sessionId == user.id
+                        }
 
+                        updatedVotes.remove(vote)
+                        day.votes.remove(vote)
                         setVoteState(updatedVotes)
-
-                        val vote = votes.first{ it.sessionId == user.id }
-
                         setVoted(false)
 
-                        // TODO only send one request
                         if (votesStoredInKafka) {
                             voteService.cancelHttp(vote)
                         } else {
                             voteService.cancel(vote)
                         }
+
+                        println("cancelled vote - ${vote.date} ${voteState.size}")
                     } else {
-                        val newVote = Vote(props.pollId, day.date)
+                        val newVote = Vote(poll.id!!, day.date)
                         newVote.sessionId = user.id
                         newVote.name = user.name
 
                         val updatedVotes = voteState.toMutableList()
+
                         updatedVotes.add(newVote)
+                        day.votes.add(newVote)
 
                         setVoteState(updatedVotes)
-
                         setVoted(true)
 
-                        // TODO only send one request
                         if (votesStoredInKafka) {
                             voteService.sendHttp(newVote)
                         } else {
                             voteService.vote(newVote)
                         }
+
+                        println("added vote - ${newVote.date} ${voteState.size}")
                     }
                 }
 
