@@ -36,61 +36,62 @@ fun Route.vote(userRepository: UserRepository, kafkaEventService: KafkaEventServ
             val user = userRepository.findById(session.id)!!
             vote.sessionId = user.id
             vote.name = user.name
+            vote.id = UserSession.generateString(20)
 
             kafkaEventService.createVoteEvent(vote)
 
             call.respond(HttpStatusCode.Created)
         }
-    }
 
-    get(Vote.path_http + "/{pollId}") {
-        val pollId = call.parameters["pollId"]!!
+        get(Vote.path_http + "/{pollId}") {
+            val pollId = call.parameters["pollId"]!!
 
-        val clientId = "vote-consumer-" + pollId + "-" + UUID.randomUUID()
-        val kafkaConfig = HashMap<String, Any>().apply {
-            this[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = "pkc-e8mp5.eu-west-1.aws.confluent.cloud:9092"
-            this[ConsumerConfig.CLIENT_ID_CONFIG] = clientId
-            this[ConsumerConfig.GROUP_ID_CONFIG] = clientId
-            this[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
-            this[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
-            this[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
+            val clientId = "vote-consumer-" + pollId + "-" + UUID.randomUUID()
+            val kafkaConfig = HashMap<String, Any>().apply {
+                this[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = "pkc-e8mp5.eu-west-1.aws.confluent.cloud:9092"
+                this[ConsumerConfig.CLIENT_ID_CONFIG] = clientId
+                this[ConsumerConfig.GROUP_ID_CONFIG] = clientId
+                this[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
+                this[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
+                this[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
 
-            this[CommonClientConfigs.SECURITY_PROTOCOL_CONFIG] = "SASL_SSL"
+                this[CommonClientConfigs.SECURITY_PROTOCOL_CONFIG] = "SASL_SSL"
 
-            this[SaslConfigs.SASL_JAAS_CONFIG] = "org.apache.kafka.common.security.plain.PlainLoginModule required username='TNJVLXNAIZZ5RWDC' password='rdpAlMTV1BrXFK5fxBimUpIY2hDz7OUdCkINrqvKTYYyU4vtSttyvvvUgS5RRxY/';"
-            this[SaslConfigs.SASL_MECHANISM] = "PLAIN"
-        }
+                this[SaslConfigs.SASL_JAAS_CONFIG] = "org.apache.kafka.common.security.plain.PlainLoginModule required username='TNJVLXNAIZZ5RWDC' password='rdpAlMTV1BrXFK5fxBimUpIY2hDz7OUdCkINrqvKTYYyU4vtSttyvvvUgS5RRxY/';"
+                this[SaslConfigs.SASL_MECHANISM] = "PLAIN"
+            }
 
-        val receiverOptions = ReceiverOptions.create<Int, String>(kafkaConfig)
-        val options: ReceiverOptions<Int, String> = receiverOptions.subscription(Collections.singleton("calendar_votes_${pollId}"))
+            val receiverOptions = ReceiverOptions.create<Int, String>(kafkaConfig)
+            val options: ReceiverOptions<Int, String> = receiverOptions.subscription(Collections.singleton("calendar_votes_${pollId}"))
 
-        val kafkaFlux = KafkaReceiver.create(options).receive()
+            val kafkaFlux = KafkaReceiver.create(options).receive()
 
-        val events = mutableListOf<String>()
-        val sentEvents = mutableListOf<String>()
+            val events = mutableListOf<String>()
+            val sentEvents = mutableListOf<String>()
 
-        kafkaFlux.subscribe {
-            events.add(it.value())
-        }
+            kafkaFlux.subscribe {
+                events.add(it.value())
+            }
 
-        val channel = produce {
-            while (true) {
-                for (event in events) {
-                    if (!sentEvents.contains(event)) {
-                        send(event)
-                        sentEvents.add(event)
+            val channel = produce {
+                while (true) {
+                    for (event in events) {
+                        if (!sentEvents.contains(event)) {
+                            send(event)
+                            sentEvents.add(event)
+                        }
+                    }
+
+                    withContext(Dispatchers.IO) {
+                        Thread.sleep(100)
                     }
                 }
+            }.broadcast()
 
-                withContext(Dispatchers.IO) {
-                    Thread.sleep(100)
-                }
-            }
-        }.broadcast()
-
-        call.respondSse(
-            channel.openSubscription()
-        )
+            call.respondSse(
+                channel.openSubscription()
+            )
+        }
     }
 }
 
