@@ -29,7 +29,7 @@ kotlin {
     jvm {
         withJava()
     }
-    js(LEGACY) { // TODO use the IR compiler https://kotlinlang.org/docs/js-ir-compiler.html
+    js(IR) {
         browser {
             binaries.executable()
         }
