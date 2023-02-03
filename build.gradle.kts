@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
-val kotlinVersion = "1.8.0"
+val kotlinVersion = "1.8.10"
 val serializationVersion = "1.3.0"
 val ktorVersion = "2.0.1"
 val logbackVersion = "1.2.3"
@@ -9,9 +9,9 @@ val kmongoVersion = "4.3.0"
 val awsVersion = "2.17.175"
 
 plugins {
-    kotlin("multiplatform") version "1.5.31"
+    kotlin("multiplatform") version "1.8.10"
     application
-    kotlin("plugin.serialization") version "1.5.31"
+    kotlin("plugin.serialization") version "1.8.10"
 }
 
 group = "uk.co.scarfebread"

@@ -5,25 +5,23 @@ import event.KafkaEventService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.broadcast
 import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.withContext
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.serialization.StringDeserializer
-import reactor.core.publisher.Flux
 import reactor.kafka.receiver.KafkaReceiver
 import reactor.kafka.receiver.ReceiverOptions
-import reactor.kafka.receiver.ReceiverRecord
 import repository.UserRepository
 import session.UserSession
 import java.util.*
@@ -47,6 +45,7 @@ fun Route.vote(userRepository: UserRepository, kafkaEventService: KafkaEventServ
 
     get(Vote.path_http + "/{pollId}") {
         val pollId = call.parameters["pollId"]!!
+
         val clientId = "vote-consumer-" + pollId + "-" + UUID.randomUUID()
         val kafkaConfig = HashMap<String, Any>().apply {
             this[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = "pkc-e8mp5.eu-west-1.aws.confluent.cloud:9092"
@@ -62,34 +61,47 @@ fun Route.vote(userRepository: UserRepository, kafkaEventService: KafkaEventServ
             this[SaslConfigs.SASL_MECHANISM] = "PLAIN"
         }
 
-        val receiverOptions = ReceiverOptions.create<Int, Vote>(kafkaConfig)
-        val options: ReceiverOptions<Int, Vote> = receiverOptions.subscription(Collections.singleton("calendar_votes_${pollId}"))
+        val receiverOptions = ReceiverOptions.create<Int, String>(kafkaConfig)
+        val options: ReceiverOptions<Int, String> = receiverOptions.subscription(Collections.singleton("calendar_votes_${pollId}"))
 
-        val kafkaFlux: Flux<ReceiverRecord<Int, Vote>> = KafkaReceiver.create(options).receive()
+        val kafkaFlux = KafkaReceiver.create(options).receive()
 
-        val events = mutableListOf<Vote>()
+        val events = mutableListOf<String>()
+        val sentEvents = mutableListOf<String>()
+
         kafkaFlux.subscribe {
             events.add(it.value())
         }
 
         val channel = produce {
-            for (event in events) {
-                send(event)
+            while (true) {
+                for (event in events) {
+                    if (!sentEvents.contains(event)) {
+                        send(event)
+                        sentEvents.add(event)
+                    }
+                }
+
+                withContext(Dispatchers.IO) {
+                    Thread.sleep(100)
+                }
             }
-        }
+        }.broadcast()
 
         call.respondSse(
-            channel
+            channel.openSubscription()
         )
     }
 }
 
-suspend fun ApplicationCall.respondSse(events: ReceiveChannel<Vote>) {
+suspend fun ApplicationCall.respondSse(events: ReceiveChannel<String>) {
     response.cacheControl(CacheControl.NoCache(null))
 
     respondTextWriter(contentType = ContentType.Text.EventStream) {
         for (event in events) {
-            write("${event.sessionId}\n")
+            for (dataLine in event.lines()) {
+                write("data: $dataLine\n")
+            }
             write("\n")
             flush()
         }

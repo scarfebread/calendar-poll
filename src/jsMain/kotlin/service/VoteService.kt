@@ -110,7 +110,7 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
         val voteService = this
 
         scope.launch {
-            val eventSource = EventSource("http://localhost:8080/votes?pollId=${poll.id}")
+            val eventSource = EventSource("${config.host}${Vote.path_http}/${poll.id}")
 
             voteService.eventSource = eventSource
 

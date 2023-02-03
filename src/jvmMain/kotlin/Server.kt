@@ -14,8 +14,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.serialization.json.Json
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.producer.KafkaProducer
