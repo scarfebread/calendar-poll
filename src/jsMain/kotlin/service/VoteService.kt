@@ -116,21 +116,15 @@ class VoteService(private val scope: CoroutineScope, private val config: Config)
 
     private fun processVoteEvent(poll: Poll, voteMap: Map<String, Pair<Int, StateSetter<Int>>>, vote: Vote) {
         poll.calendar!!.first { it.date == vote.date }.apply {
-            println("received event - ${vote.name} ${vote.date} ${vote.name}")
-
             if (vote.delete) {
                 val index = votes.indexOfFirst { it.name == vote.name }
                 if (index >= 0) {
                     votes.removeAt(index)
                 }
-            } else if (votes.firstOrNull { it.date == vote.date && it.name == vote.name } == null) {
-                println("received event - adding vote")
+            } else if (votes.firstOrNull { it.date == vote.date && it.sessionId == vote.sessionId } == null) {
                 votes.add(vote)
-            } else {
-                println("not including vote ${vote.date} ${vote.name}")
             }
 
-            println("received event - ${vote.date} ${votes.size}")
             voteMap[vote.date]!!.second(votes.size)
         }
     }

@@ -89,8 +89,6 @@ val day = fc<DayProps> { props ->
                         } else {
                             voteService.cancel(vote)
                         }
-
-                        println("cancelled vote - ${vote.date} ${numberOfVotes}")
                     } else {
                         val newVote = Vote(poll.id!!, day.date)
                         newVote.sessionId = user.id
@@ -106,8 +104,6 @@ val day = fc<DayProps> { props ->
                         } else {
                             voteService.vote(newVote)
                         }
-
-                        println("added vote - ${newVote.date} ${numberOfVotes}")
                     }
                 }
 
