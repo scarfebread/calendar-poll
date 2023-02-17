@@ -6,9 +6,6 @@ import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
-import org.apache.kafka.common.errors.TopicExistsException
-import java.util.*
-import java.util.concurrent.ExecutionException
 
 class KafkaEventService(private val producer: KafkaProducer<String, Vote>, private val adminClient: AdminClient) {
     fun createVoteEvent(vote: Vote) {
@@ -33,7 +30,7 @@ class KafkaEventService(private val producer: KafkaProducer<String, Vote>, priva
     }
 
     companion object {
-        private const val PARTITIONS = 3
-        private const val REPLICATION_FACTOR: Short = 3
+        private const val PARTITIONS = 1
+        private const val REPLICATION_FACTOR: Short = 1
     }
 }
