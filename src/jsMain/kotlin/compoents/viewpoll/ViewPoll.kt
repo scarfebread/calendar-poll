@@ -49,6 +49,7 @@ val viewPoll = fc<ViewPollProps> { props ->
     div {
         css {
             marginRight = LinearDimension("35px")
+            marginBottom = LinearDimension("125px")
         }
 
         h2 { +props.poll.title }

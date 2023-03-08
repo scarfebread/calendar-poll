@@ -13,7 +13,7 @@ val footer = fc<Props> {
             height = LinearDimension("100px")
             backgroundColor = Color.lightGray
             textAlign = TextAlign.center
-            position = Position.absolute
+            position = Position.fixed
             bottom = LinearDimension("0")
         }
     }
